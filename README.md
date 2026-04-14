@@ -140,10 +140,3 @@ Dhruva Aher
 
 ---
 
-## ⭐ Why this project stands out
-
-FlowBoard demonstrates:
-- real backend architecture  
-- real-time systems  
-- multi-user collaboration  
-- production debugging and system design  
