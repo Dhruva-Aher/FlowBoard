@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply border-neutral-800; }
+  body { @apply bg-neutral-950 text-neutral-100; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-neutral-900; }
+  ::-webkit-scrollbar-thumb { @apply bg-neutral-700 rounded-full; }
+}
+
+/* TipTap editor styles */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #525252; /* neutral-600 */
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap {
+  caret-color: #a5b4fc; /* brand-300 — visible on dark background */
+}
+
+.tiptap:focus {
+  outline: none;
+}
