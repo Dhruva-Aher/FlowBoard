@@ -13,14 +13,13 @@ Multi-tenant collaborative workspace: JWT/RBAC isolation, Kanban with ordered ta
 
 | Outcome | Metric | Evidence |
 |--------|--------|----------|
-| Backend suite green | **59** pytest cases, **0** failures (~15s) | [`docs/evidence/pytest-summary.txt`](docs/evidence/pytest-summary.txt) · Grade A* |
+| Backend suite | **62** pytest cases collected; prior green run **59** pass | [`docs/evidence/source-size.txt`](docs/evidence/source-size.txt) · [`pytest-summary.txt`](docs/evidence/pytest-summary.txt) |
 | Fail-closed tenant gate | Non-member → **403** on workspace/docs; WS membership denied for outsiders | `tests/integration/test_*` |
 | Auth hardening | Argon2; passwords **>72 bytes** OK; **>1000** → **422** | security + auth tests |
 | Kanban order correctness | Positions **0, 1, …** (`is None` not `or -1`) | `test_task_position_auto_assigned` |
 | Realtime publish path | Task move → Redis publish (Compose/proof) | `test_move_task_publishes_ws_event` |
 | Public demo live | SPA + `/health` + register/workspace CRUD on Neon | [`docs/evidence/vercel-prod-smoke.txt`](docs/evidence/vercel-prod-smoke.txt) · Grade A |
-
-\*Re-stamp evidence after commit so SHA matches.
+| Prod API latency (n=5) | `/health` p50 **~130ms** · SPA p50 **~48ms** · register **~616ms** | [`docs/evidence/prod-api-latency.txt`](docs/evidence/prod-api-latency.txt) · Grade A |
 ## Architecture (short)
 
 ```
