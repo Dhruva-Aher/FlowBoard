@@ -52,13 +52,13 @@ export default function Sidebar() {
   const isActive = (path: string) => location.pathname === path
 
   return (
-    <aside className="w-60 shrink-0 bg-neutral-900 border-r border-neutral-800 flex flex-col h-full">
+    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-4 py-4 border-b border-neutral-800">
-        <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
+      <div className="flex items-center gap-2 border-b border-sidebar-border px-4 py-4">
+        <div className="flex size-7 items-center justify-center rounded-lg bg-brand-600">
           <Zap size={14} className="text-white" />
         </div>
-        <span className="font-bold text-white text-sm tracking-wide">FlowBoard</span>
+        <span className="font-display text-sm font-extrabold tracking-tight">FlowBoard</span>
       </div>
 
       {/* Main nav */}
