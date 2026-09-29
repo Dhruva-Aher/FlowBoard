@@ -24,7 +24,14 @@ export default function Topbar() {
     if (segments.includes('board')) {
       crumbs.push({ label: 'Board' })
     } else if (segments.includes('docs')) {
-      crumbs.push({ label: 'Document' })
+      const docIdx = segments.indexOf('docs')
+      crumbs.push({
+        label: 'Documents',
+        href: workspaceId ? `/app/workspace/${workspaceId}/docs` : undefined,
+      })
+      if (segments[docIdx + 1]) {
+        crumbs.push({ label: 'Editor' })
+      }
     } else if (segments.includes('members')) {
       crumbs.push({ label: 'Members' })
     } else if (segments.includes('settings')) {
