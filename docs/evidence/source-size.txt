@@ -1,0 +1,9 @@
+# Source size snapshot — 2026-09-29
+
+```
+backend/app  *.py   3133 lines (find | xargs wc -l)
+frontend/src *.ts*  6563 lines (find | xargs wc -l)
+pytest collect: 62 tests
+```
+
+Not a complexity claim — inventory only.

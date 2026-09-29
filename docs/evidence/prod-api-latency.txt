@@ -1,0 +1,10 @@
+# FlowBoard production API latency — 2026-09-29T22:32:07.246059+00:00
+HOST=https://flowboard-iota-blond.vercel.app
+ROUNDS=5
+Note: single-region Vercel→Neon cold/warm mix; not a load test. Grade A for this window only.
+
+GET /health: status=200 n=5 p50=129.8ms p95=140.3ms mean=136.1ms min=121.5ms max=166.0ms samples=[166.0, 140.3, 123.1, 121.5, 129.8]
+GET / (SPA): status=200 n=5 p50=48.4ms p95=52.5ms mean=51.9ms min=48.1ms max=62.4ms samples=[48.1, 48.1, 52.5, 62.4, 48.4]
+POST /api/v1/auth/register (single): status=200 n=1 p50=615.6ms p95=615.6ms mean=615.6ms min=615.6ms max=615.6ms samples=[615.6]
+GET /api/v1/auth/me: status=200 n=5 p50=189.4ms p95=214.3ms mean=214.9ms min=184.4ms max=297.4ms samples=[297.4, 184.4, 214.3, 188.8, 189.4]
+POST /api/v1/workspaces (single): status=200 n=1 p50=308.9ms p95=308.9ms mean=308.9ms min=308.9ms max=308.9ms samples=[308.9]

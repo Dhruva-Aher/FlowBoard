@@ -13,9 +13,7 @@ Evidence grades: **A** = artifact/command for this tree · **B** = reproducible 
 
 | ID | Claim (exact) | Name / unit / window | Grade | Evidence |
 |----|---------------|----------------------|-------|----------|
-| C1 | Backend test suite: **59 passed, 0 failed** | count; single `pytest tests/` run | A* | `docs/evidence/pytest-summary.txt` (~14.8s wall) |
-
-\*Grade **A** for the hardened working tree that produced the artifact; re-stamp after you commit so the SHA matches.
+| C1 | Backend test suite: **62 collected** (unit+integration; re-run for pass count) | count; `pytest tests/ --collect-only` | A | `docs/evidence/source-size.txt` + prior `pytest-summary.txt` (59 pass before URL normalize tests) |
 | C2 | Non-member cannot read another workspace | HTTP **403** | A | `test_non_member_cannot_access_workspace` |
 | C3 | Non-member cannot patch another workspace’s doc | HTTP **403** | A | `test_non_member_cannot_update_document` |
 | C4 | WS membership helper: owner → true, outsider → false | boolean gate before WS accept | A | `test_member_true_after_workspace_create`, `test_outsider_is_not_member` |
@@ -30,6 +28,10 @@ Evidence grades: **A** = artifact/command for this tree · **B** = reproducible 
 | C13 | Refresh tokens unique; verify round-trip | cryptographic uniqueness | A | `test_refresh_tokens_are_unique`, `test_refresh_token_verify` |
 | C14 | Access token expires (15 min config) | JWT `exp` enforced | A | `test_access_token_expired` (freezegun +20 min) |
 | C15 | Public Vercel demo: SPA **200**, `/health` **ok**, register→workspace→project **200** | HTTPS `flowboard-iota-blond.vercel.app`; redis `null` | A | `docs/evidence/vercel-prod-smoke.txt` (2026-09-29) |
+| C16 | Prod `GET /health` p50 **~130ms** (n=5) | ms; Vercel→Neon window 2026-09-29 | A | `docs/evidence/prod-api-latency.txt` |
+| C17 | Prod `GET /` SPA p50 **~48ms** (n=5) | ms; same window | A | `docs/evidence/prod-api-latency.txt` |
+| C18 | Prod register (single) **~616ms**; `/auth/me` p50 **~189ms**; create workspace **~309ms** | ms; Argon2+DB on serverless | A | `docs/evidence/prod-api-latency.txt` |
+| C19 | Source inventory: backend app **3133** LOC · frontend src **6563** LOC · **62** pytest cases | lines / count | A | `docs/evidence/source-size.txt` |
 
 ## Explicit non-claims (do not pitch)
 
@@ -39,8 +41,8 @@ Evidence grades: **A** = artifact/command for this tree · **B** = reproducible 
 | Landing “12,000+ teams / 500K tasks / 99.9% SLA” | **Removed** — fabricated marketing |
 | “live multi-client collaboration on Vercel” | Redis optional; NullRedis demo has no cross-client pub/sub |
 | “email notifications via SES” / “S3 exports live” | Celery not run on Vercel |
+| Exact multi-region p99 / sustained QPS | C16–C18 are single-client warm samples only — not capacity claims |
 | Frontend “unit test coverage” | No `*.test.ts(x)` files; CI typecheck only |
-| Exact p99 latency / QPS | Never measured — Grade **D** if set as a goal later |
 
 ## How to re-verify (Grade B harness)
 
