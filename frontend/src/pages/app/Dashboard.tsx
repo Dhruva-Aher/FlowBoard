@@ -460,7 +460,7 @@ export default function Dashboard() {
               Open a workspace to get started
             </p>
             <p className="text-xs text-neutral-500">
-              Create projects, manage tasks on Kanban boards, and collaborate in real time.
+              Boards for tasks, documents for decisions — open a workspace to create either.
             </p>
           </div>
           <Link

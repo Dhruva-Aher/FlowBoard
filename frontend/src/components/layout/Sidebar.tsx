@@ -145,10 +145,12 @@ export default function Sidebar() {
                         <Settings size={13} /> Settings
                       </Link>
                       <Link
-                        to={`/app/workspace/${ws.id}/docs/new`}
+                        to={`/app/workspace/${ws.id}/docs`}
                         className={clsx(
                           'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors',
-                          'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800'
+                          location.pathname.includes(`/workspace/${ws.id}/docs`)
+                            ? 'text-white bg-neutral-800'
+                            : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800'
                         )}
                       >
                         <FileText size={13} /> Documents
