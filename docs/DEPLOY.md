@@ -3,6 +3,17 @@
 **Demo environment** (this doc) ≠ **proof environment** (`pytest` + Compose).  
 Do not cite Vercel uptime/latency as backend benchmarks.
 
+## Immediate claimable frontend preview
+
+Anonymous CLI cannot finish a full Services (API) build without your logged-in account.
+
+A **static frontend** temp deploy was published for claim:
+
+- **URL:** https://temporary-express-vega-blbge3r.vercel.app  
+- **Claim (keep live):** https://vercel.com/claim-deployment?code=6a563929-2040-45ff-b7e2-ce57090377ee  
+- **Expires:** ~60 minutes unless claimed  
+- **Scope:** Vite SPA only — `/api` will not work until Neon + Services deploy below
+
 ## Architecture (DECIDED)
 
 One Vercel project (`flowboard`) using **Vercel Services**:

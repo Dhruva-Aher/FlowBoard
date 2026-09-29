@@ -174,8 +174,11 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 
 ---
 
-## D16 — GitHub App + Neon are user-gated blockers
+## D17 — Anonymous temp deploy = frontend static only
 
-- **Context:** MCP could create project `prj_XMzk6sV318n2GyIB0lloSZDDj0AD` but linking GitHub returned 403 (Vercel GitHub App not installed / scope). Neon cannot be provisioned without Marketplace install on the user’s team.
-- **Decision:** Ship code + docs; user installs GitHub App, links repo, adds Neon (+ optional Upstash), then production deploy.
-- **Status:** DECIDED · external actions required
+- **Context:** Full Services deploy needs authenticated Vercel (Python `uv` / container OIDC). CLI logged out; MCP Git link 403 without GitHub App.
+- **Decision:** Ship a **claimable temporary static Vite** URL for immediate frontend review; keep root `vercel.json` Services for the permanent full-stack demo after Neon + login.
+- **Why:** User’s stated focus is frontend skills; unblock a public URL without inventing a working API.
+- **Tradeoffs:** Temp URL expires (~60m) until claimed; `/api` dead until Neon-backed Services deploy.
+- **Evidence:** `docs/evidence/vercel-frontend-temp.txt`
+- **Status:** DECIDED · IMPLEMENTED · VERIFIED (HTTP 200 Landing shows FlowBoard; no fake stats)
