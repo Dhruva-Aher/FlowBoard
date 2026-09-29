@@ -182,3 +182,12 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 - **Tradeoffs:** Temp URL expires (~60m) until claimed; `/api` dead until Neon-backed Services deploy.
 - **Evidence:** `docs/evidence/vercel-frontend-temp.txt`
 - **Status:** DECIDED · IMPLEMENTED · VERIFIED (HTTP 200 Landing shows FlowBoard; no fake stats)
+
+---
+
+## D18 — Cannot finish Neon/Marketplace without owner Vercel login
+
+- **Context:** User asked to “do all setup / connect plugins.” MCP can create the empty `flowboard` project but returns **403** on team scope `dhruva-ahers-projects` for env, integrations, and connectors. CLI is logged out; Marketplace `integration add neon` requires an authenticated human device login.
+- **Decision:** Prepare `scripts/vercel-setup-and-deploy.sh` (link → secrets → Neon → optional Upstash → `--prod`). Block on one owner action: complete `vercel login` device URL. Then re-run the script.
+- **Why:** No API path exists from this agent token to bill/provision Neon on the user’s team.
+- **Status:** DECIDED · script IMPLEMENTED · Neon VERIFIED pending login
