@@ -228,9 +228,9 @@ function EditorToolbar({ editor }: { editor: Editor | null }) {
   )
 }
 
-function Outline({ editor }: { editor: Editor | null }) {
+function Outline({ editor, revision }: { editor: Editor | null; revision: number }) {
   const headings = useMemo(() => {
-    if (!editor) return [] as { level: number; text: string; pos: number }[]
+    if (!editor || editor.isDestroyed) return [] as { level: number; text: string; pos: number }[]
     const items: { level: number; text: string; pos: number }[] = []
     editor.state.doc.descendants((node, pos) => {
       if (node.type.name === 'heading') {
@@ -242,7 +242,9 @@ function Outline({ editor }: { editor: Editor | null }) {
       }
     })
     return items
-  }, [editor, editor?.state.doc])
+    // revision forces recompute after setContent / onUpdate (TipTap mutates doc in place)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, revision])
 
   if (!editor || headings.length === 0) {
     return (
@@ -286,7 +288,7 @@ export default function DocEditor() {
   const [saveState, setSaveState] = useState<SaveState>('saved')
   const [error, setError] = useState<string | null>(null)
   const [wordCount, setWordCount] = useState(0)
-  const [, bumpOutline] = useState(0)
+  const [outlineRevision, setOutlineRevision] = useState(0)
 
   const titleDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const contentDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -380,7 +382,7 @@ export default function DocEditor() {
     onUpdate: ({ editor: ed }) => {
       if (isSettingContentRef.current) return
       setWordCount(countWordsFromEditor(ed))
-      bumpOutline((n) => n + 1)
+      setOutlineRevision((n) => n + 1)
       scheduleContentSave(ed.getJSON() as Record<string, unknown>)
     },
   })
@@ -389,11 +391,17 @@ export default function DocEditor() {
     if (!doc || !editor || editor.isDestroyed) return
     setTitle(doc.title)
     isSettingContentRef.current = true
-    editor.commands.setContent(isValidDoc(doc.content) ? doc.content : EMPTY_DOC, false)
+    const next = isValidDoc(doc.content) ? doc.content : EMPTY_DOC
+    const ok = editor.commands.setContent(next, false)
+    if (!ok) {
+      // Fall back if TipTap rejects malformed JSON (e.g. empty text nodes)
+      editor.commands.setContent(EMPTY_DOC, false)
+    }
     isSettingContentRef.current = false
-    setWordCount(doc.word_count ?? countWordsFromEditor(editor))
+    const fromEditor = countWordsFromEditor(editor)
+    setWordCount(fromEditor || doc.word_count || 0)
     setSaveState('saved')
-    bumpOutline((n) => n + 1)
+    setOutlineRevision((n) => n + 1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc])
 
@@ -482,7 +490,7 @@ export default function DocEditor() {
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/40">
             Outline
           </p>
-          <Outline editor={editor} />
+          <Outline editor={editor} revision={outlineRevision} />
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
           <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">

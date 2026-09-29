@@ -72,6 +72,9 @@ export default function DocsList() {
     enabled: !!workspaceId,
   })
 
+  // Templates stay open when the workspace has no docs yet — empty list felt barren.
+  const templatesOpen = showCreate || (!isLoading && docs.length === 0)
+
   const createDoc = useMutation({
     mutationFn: (body: { title: string; template?: string }) =>
       api
@@ -147,28 +150,28 @@ export default function DocsList() {
           onClick={() => setShowCreate((s) => !s)}
           className="inline-flex items-center gap-2 rounded-xl bg-teal-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-teal-300"
         >
-          <Plus size={15} /> New document
+          <Plus size={15} /> {templatesOpen && docs.length > 0 ? 'Hide templates' : 'New document'}
         </button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-          <p className="text-[11px] uppercase tracking-wider text-white/40">Documents</p>
-          <p className="mt-1 text-xl font-semibold text-white">{docs.length}</p>
+      {docs.length > 0 && (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+            <p className="text-[11px] uppercase tracking-wider text-white/40">Documents</p>
+            <p className="mt-1 text-xl font-semibold text-white">{docs.length}</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+            <p className="text-[11px] uppercase tracking-wider text-white/40">Total words</p>
+            <p className="mt-1 text-xl font-semibold text-white">{totalWords}</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+            <p className="text-[11px] uppercase tracking-wider text-white/40">Updated</p>
+            <p className="mt-1 text-sm font-medium text-white/80">
+              {formatDistanceToNow(parseISO(docs[0].updated_at), { addSuffix: true })}
+            </p>
+          </div>
         </div>
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-          <p className="text-[11px] uppercase tracking-wider text-white/40">Total words</p>
-          <p className="mt-1 text-xl font-semibold text-white">{totalWords}</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-          <p className="text-[11px] uppercase tracking-wider text-white/40">Updated</p>
-          <p className="mt-1 text-sm font-medium text-white/80">
-            {docs[0]
-              ? formatDistanceToNow(parseISO(docs[0].updated_at), { addSuffix: true })
-              : '—'}
-          </p>
-        </div>
-      </div>
+      )}
 
       {error && (
         <div className="rounded-lg border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
@@ -176,9 +179,14 @@ export default function DocsList() {
         </div>
       )}
 
-      {showCreate && (
+      {templatesOpen && (
         <div className="rounded-2xl border border-white/10 bg-[#0e1520] p-5">
-          <h2 className="mb-3 text-sm font-semibold text-white">Start from a template</h2>
+          <h2 className="mb-1 text-sm font-semibold text-white">
+            {docs.length === 0 ? 'Start with a template' : 'Start from a template'}
+          </h2>
+          <p className="mb-3 text-xs text-white/45">
+            Structured starters for meetings, specs, and standups — editable TipTap docs with autosave.
+          </p>
           <div className="grid gap-3 sm:grid-cols-2">
             {TEMPLATES.map((t) => (
               <button
@@ -250,26 +258,11 @@ export default function DocsList() {
         </div>
       )}
 
-      {!isLoading && filtered.length === 0 && (
+      {!isLoading && filtered.length === 0 && docs.length > 0 && (
         <div className="rounded-2xl border border-dashed border-white/15 px-6 py-14 text-center">
           <FileText size={28} className="mx-auto mb-3 text-white/30" />
-          <p className="text-sm font-medium text-white/80">
-            {docs.length === 0 ? 'No documents yet' : 'No matches'}
-          </p>
-          <p className="mt-1 text-xs text-white/45">
-            {docs.length === 0
-              ? 'Create a meeting note or spec to capture decisions next to the board.'
-              : 'Try a different search.'}
-          </p>
-          {docs.length === 0 && (
-            <button
-              type="button"
-              onClick={() => createDoc.mutate({ title: 'Meeting notes', template: 'meeting' })}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-teal-400 px-3 py-2 text-xs font-semibold text-slate-950 hover:bg-teal-300"
-            >
-              <Plus size={12} /> Meeting notes template
-            </button>
-          )}
+          <p className="text-sm font-medium text-white/80">No matches</p>
+          <p className="mt-1 text-xs text-white/45">Try a different search.</p>
         </div>
       )}
 

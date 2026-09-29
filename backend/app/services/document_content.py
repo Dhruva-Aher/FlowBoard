@@ -21,6 +21,23 @@ def extract_plain_text(node: Any) -> str:
     return " ".join(parts)
 
 
+def sanitize_tiptap(node: Any) -> Any:
+    """Drop empty text nodes TipTap/ProseMirror rejects on setContent."""
+    if not isinstance(node, dict):
+        return node
+    out: dict[str, Any] = {k: v for k, v in node.items() if k != "content"}
+    if "content" not in node:
+        return out
+    cleaned: list[Any] = []
+    for child in node.get("content") or []:
+        if isinstance(child, dict) and child.get("type") == "text" and not child.get("text"):
+            continue
+        cleaned.append(sanitize_tiptap(child))
+    if cleaned:
+        out["content"] = cleaned
+    return out
+
+
 def word_count(content: dict[str, Any] | None) -> int:
     text = extract_plain_text(content or {})
     words = [w for w in text.split() if w]
@@ -36,70 +53,83 @@ def preview_text(content: dict[str, Any] | None, limit: int = 160) -> str:
     return text[: limit - 1].rstrip() + "…"
 
 
+def _text(value: str) -> dict[str, Any]:
+    return {"type": "text", "text": value}
+
+
+def _heading(level: int, value: str) -> dict[str, Any]:
+    return {"type": "heading", "attrs": {"level": level}, "content": [_text(value)]}
+
+
+def _paragraph(value: str | None = None) -> dict[str, Any]:
+    if value:
+        return {"type": "paragraph", "content": [_text(value)]}
+    return {"type": "paragraph"}
+
+
+def _bullet(*items: str) -> dict[str, Any]:
+    """Build a bullet list. Empty strings become empty paragraphs (no empty text nodes)."""
+    return {
+        "type": "bulletList",
+        "content": [
+            {"type": "listItem", "content": [_paragraph(item or None)]}
+            for item in (items or ("",))
+        ],
+    }
+
+
+def _ordered(*items: str) -> dict[str, Any]:
+    return {
+        "type": "orderedList",
+        "content": [
+            {"type": "listItem", "content": [_paragraph(item)]}
+            for item in items
+        ],
+    }
+
+
 def template_content(name: str | None) -> dict[str, Any]:
     key = (name or "blank").lower().strip()
+    # TipTap/ProseMirror rejects empty text nodes — never emit {"text": ""}.
     templates: dict[str, dict[str, Any]] = {
         "blank": EMPTY_DOC,
         "meeting": {
             "type": "doc",
             "content": [
-                {"type": "heading", "attrs": {"level": 1}, "content": [{"type": "text", "text": "Meeting notes"}]},
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Attendees"}]},
-                {
-                    "type": "bulletList",
-                    "content": [
-                        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": ""}]}]},
-                    ],
-                },
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Agenda"}]},
-                {
-                    "type": "orderedList",
-                    "content": [
-                        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Updates"}]}]},
-                        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Decisions"}]}]},
-                        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Next steps"}]}]},
-                    ],
-                },
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Action items"}]},
-                {
-                    "type": "bulletList",
-                    "content": [
-                        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "[ ] Owner — task — due date"}]}]},
-                    ],
-                },
-                {"type": "paragraph"},
+                _heading(1, "Meeting notes"),
+                _heading(2, "Attendees"),
+                _bullet(""),
+                _heading(2, "Agenda"),
+                _ordered("Updates", "Decisions", "Next steps"),
+                _heading(2, "Action items"),
+                _bullet("[ ] Owner — task — due date"),
+                _paragraph(),
             ],
         },
         "spec": {
             "type": "doc",
             "content": [
-                {"type": "heading", "attrs": {"level": 1}, "content": [{"type": "text", "text": "Feature spec"}]},
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Problem"}]},
-                {"type": "paragraph", "content": [{"type": "text", "text": "What user pain are we solving?"}]},
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Goals"}]},
-                {
-                    "type": "bulletList",
-                    "content": [
-                        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Primary outcome"}]}]},
-                        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Non-goals"}]}]},
-                    ],
-                },
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Approach"}]},
-                {"type": "paragraph", "content": [{"type": "text", "text": "High-level design and constraints."}]},
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Risks"}]},
-                {"type": "paragraph"},
+                _heading(1, "Feature spec"),
+                _heading(2, "Problem"),
+                _paragraph("What user pain are we solving?"),
+                _heading(2, "Goals"),
+                _bullet("Primary outcome", "Non-goals"),
+                _heading(2, "Approach"),
+                _paragraph("High-level design and constraints."),
+                _heading(2, "Risks"),
+                _paragraph(),
             ],
         },
         "standup": {
             "type": "doc",
             "content": [
-                {"type": "heading", "attrs": {"level": 1}, "content": [{"type": "text", "text": "Daily standup"}]},
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Yesterday"}]},
-                {"type": "bulletList", "content": [{"type": "listItem", "content": [{"type": "paragraph"}]}]},
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Today"}]},
-                {"type": "bulletList", "content": [{"type": "listItem", "content": [{"type": "paragraph"}]}]},
-                {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Blockers"}]},
-                {"type": "bulletList", "content": [{"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "None"}]}]}]},
+                _heading(1, "Daily standup"),
+                _heading(2, "Yesterday"),
+                _bullet(""),
+                _heading(2, "Today"),
+                _bullet(""),
+                _heading(2, "Blockers"),
+                _bullet("None"),
             ],
         },
     }
@@ -107,7 +137,8 @@ def template_content(name: str | None) -> dict[str, Any]:
 
 
 def enrich_list_item(doc) -> dict[str, Any]:
-    content = doc.content if isinstance(doc.content, dict) else {}
+    raw = doc.content if isinstance(doc.content, dict) else {}
+    content = sanitize_tiptap(raw) if isinstance(raw, dict) else {}
     return {
         "id": doc.id,
         "title": doc.title,
@@ -121,7 +152,8 @@ def enrich_list_item(doc) -> dict[str, Any]:
 
 
 def enrich_response(doc) -> dict[str, Any]:
-    content = doc.content if isinstance(doc.content, dict) else {}
+    raw = doc.content if isinstance(doc.content, dict) else {}
+    content = sanitize_tiptap(raw) if isinstance(raw, dict) else {}
     return {
         "id": doc.id,
         "workspace_id": doc.workspace_id,
