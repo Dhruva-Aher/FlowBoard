@@ -18,9 +18,7 @@ import { DotPattern } from '@/components/ui/dot-pattern'
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button'
 import { Marquee } from '@/components/ui/marquee'
 import { Particles } from '@/components/ui/particles'
-import { Safari } from '@/components/ui/safari'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
-import { TextAnimate } from '@/components/ui/text-animate'
 import { FlickeringGrid } from '@/components/ui/flickering-grid'
 
 const CAPABILITIES = [
@@ -108,7 +106,7 @@ const FEATURES = [
 
 function BoardScreen() {
   return (
-    <div className="flex h-full min-h-[320px] w-full bg-[#0b1118] text-left text-neutral-200">
+    <div className="flex size-full min-h-full bg-[#0b1118] text-left text-neutral-200">
       <aside className="hidden w-40 shrink-0 flex-col gap-1 border-r border-white/5 bg-black/30 p-3 sm:flex">
         <div className="mb-3 flex items-center gap-2 px-1">
           <div className="flex size-5 items-center justify-center rounded-md bg-brand-600">
@@ -220,17 +218,17 @@ export default function Landing() {
           </BlurFade>
 
           <BlurFade delay={0.15}>
-            <p className="font-display mb-4 text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl md:text-7xl">
+            <p className="font-display mb-3 text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl md:text-7xl">
               FlowBoard
             </p>
           </BlurFade>
 
-          <h1 className="font-display mb-5 text-balance text-2xl font-bold tracking-tight text-foreground/90 sm:text-3xl md:text-4xl">
-            <TextAnimate animation="blurInUp" by="word" once>
-              Ship work in one tenant-safe space.
-            </TextAnimate>{' '}
-            <AuroraText className="font-display font-bold">Together.</AuroraText>
-          </h1>
+          <BlurFade delay={0.22}>
+            <h1 className="font-display mb-5 text-balance text-2xl font-bold tracking-tight text-foreground/90 sm:text-3xl md:text-4xl">
+              Ship work in one tenant-safe space.{' '}
+              <AuroraText className="font-display font-bold">Together.</AuroraText>
+            </h1>
+          </BlurFade>
 
           <BlurFade delay={0.35}>
             <p className="mx-auto mb-8 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -266,18 +264,32 @@ export default function Landing() {
 
         {/* Dominant product visual */}
         <BlurFade delay={0.55} className="relative mx-auto max-w-5xl">
-          <div className="relative overflow-hidden rounded-[1.25rem]">
+          <div className="relative rounded-2xl p-px">
             <BorderBeam
-              size={120}
+              size={140}
               duration={10}
               colorFrom="#5eead4"
               colorTo="#0d9488"
               borderWidth={2}
             />
-            <div className="relative overflow-hidden rounded-[1.2rem] border border-white/10 bg-black/40 p-1 shadow-2xl shadow-black/50 sm:p-2">
-              <Safari url="app.flowboard.dev/acme/board" mode="simple">
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#12151c] shadow-2xl shadow-black/50">
+              {/* Window chrome */}
+              <div className="flex items-center gap-3 border-b border-white/5 bg-black/40 px-4 py-2.5">
+                <div className="flex gap-1.5">
+                  <div className="size-2.5 rounded-full bg-white/15" />
+                  <div className="size-2.5 rounded-full bg-white/15" />
+                  <div className="size-2.5 rounded-full bg-white/15" />
+                </div>
+                <div className="mx-auto flex h-6 w-64 items-center justify-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2">
+                  <span className="size-1.5 rounded-full bg-emerald-400/80" />
+                  <span className="font-mono text-[10px] text-muted-foreground">
+                    app.flowboard.dev/acme/board
+                  </span>
+                </div>
+              </div>
+              <div className="h-[280px] sm:h-[340px]">
                 <BoardScreen />
-              </Safari>
+              </div>
             </div>
           </div>
         </BlurFade>

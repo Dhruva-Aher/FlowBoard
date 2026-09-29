@@ -62,12 +62,12 @@ export const ShimmerButton = React.forwardRef<
             <div className="animate-spin-around absolute -inset-full w-auto [translate:0_0] rotate-0 [background:conic-gradient(from_calc(270deg-(var(--spread)*0.5)),transparent_0,var(--shimmer-color)_var(--spread),transparent_var(--spread))]" />
           </div>
         </div>
-        {children}
+        <span className="relative z-10">{children}</span>
 
         {/* Highlight */}
         <div
           className={cn(
-            "absolute inset-0 size-full",
+            "absolute inset-0 size-full pointer-events-none",
 
             "rounded-2xl px-4 py-1.5 text-sm font-medium shadow-[inset_0_-8px_10px_#ffffff1f]",
 
