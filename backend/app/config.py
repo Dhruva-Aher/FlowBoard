@@ -1,17 +1,39 @@
 """Application settings with Vercel / Neon URL normalization."""
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def normalize_async_database_url(url: str) -> str:
-    """Neon/Vercel often provide postgresql://; SQLAlchemy async needs +asyncpg."""
+    """Neon/Vercel often provide postgresql://; SQLAlchemy async needs +asyncpg.
+
+    Also strips query params asyncpg does not accept (e.g. channel_binding)
+    and maps sslmode → ssl for the asyncpg dialect.
+    """
     if not url:
         return url
     if url.startswith("postgres://"):
         url = "postgresql://" + url[len("postgres://") :]
     if url.startswith("postgresql://") and "+asyncpg" not in url:
         url = "postgresql+asyncpg://" + url[len("postgresql://") :]
-    return url
+
+    parsed = urlparse(url)
+    if not parsed.query:
+        return url
+
+    params: list[tuple[str, str]] = []
+    for key, value in parse_qsl(parsed.query, keep_blank_values=True):
+        lower = key.lower()
+        if lower == "channel_binding":
+            continue
+        if lower == "sslmode":
+            # asyncpg expects `ssl`, not libpq's `sslmode`
+            params.append(("ssl", "require" if value in ("require", "verify-full", "verify-ca") else value))
+            continue
+        params.append((key, value))
+
+    return urlunparse(parsed._replace(query=urlencode(params)))
 
 
 def normalize_sync_database_url(url: str) -> str:

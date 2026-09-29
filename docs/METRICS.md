@@ -2,7 +2,7 @@
 
 **Category:** full-stack SaaS (multi-tenant collaboration)  
 **Target roles:** Backend, Full-stack  
-**Demo environment:** Docker Compose on localhost  
+**Demo environment:** https://flowboard-iota-blond.vercel.app (Vercel + Neon; Redis NullRedis)  
 **Proof environment:** `pytest` against PostgreSQL 16 + Redis 7 (same schema as app)
 
 Demo and proof are **not** mixed: no latency/throughput numbers from the UI demo.
@@ -29,7 +29,7 @@ Evidence grades: **A** = artifact/command for this tree · **B** = reproducible 
 | C12 | RBAC matrix: viewer read-only; member cannot delete workspace; admin cannot change roles | permission set lookup | A | `tests/unit/test_permissions.py` (5 cases) |
 | C13 | Refresh tokens unique; verify round-trip | cryptographic uniqueness | A | `test_refresh_tokens_are_unique`, `test_refresh_token_verify` |
 | C14 | Access token expires (15 min config) | JWT `exp` enforced | A | `test_access_token_expired` (freezegun +20 min) |
-| C15 | Public Vercel demo URL serving SPA + `/health` | HTTPS production host | **pending** | Fill after Neon + deploy per `docs/DEPLOY.md` |
+| C15 | Public Vercel demo: SPA **200**, `/health` **ok**, register→workspace→project **200** | HTTPS `flowboard-iota-blond.vercel.app`; redis `null` | A | `docs/evidence/vercel-prod-smoke.txt` (2026-09-29) |
 
 ## Explicit non-claims (do not pitch)
 

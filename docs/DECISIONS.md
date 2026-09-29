@@ -136,7 +136,7 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 - **Alternatives:** Frontend-only static site (API dead); separate Railway API (more moving parts); container-only backend.
 - **Tradeoffs:** WebSockets/Celery are weak on serverless; must document demo ≠ proof.
 - **Evidence:** `vercel.json`, `docs/DEPLOY.md`.
-- **Status:** DECIDED · IMPLEMENTED (config) · deploy VERIFIED pending Neon + Git link
+- **Status:** DECIDED · IMPLEMENTED · VERIFIED (prod URL live; see C15 / smoke evidence)
 
 ---
 
@@ -190,7 +190,7 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 - **Context:** User asked to “do all setup / connect plugins.” MCP can create the empty `flowboard` project but returns **403** on team scope `dhruva-ahers-projects` for env, integrations, and connectors. CLI is logged out; Marketplace `integration add neon` requires an authenticated human device login.
 - **Decision:** Prepare `scripts/vercel-setup-and-deploy.sh` (link → secrets → Neon → optional Upstash → `--prod`). Block on one owner action: complete `vercel login` device URL. Then re-run the script.
 - **Why:** No API path exists from this agent token to bill/provision Neon on the user’s team.
-- **Status:** DECIDED · script IMPLEMENTED · Neon VERIFIED pending login
+- **Status:** DECIDED · script IMPLEMENTED · Neon VERIFIED (`flowboard-db` + prod secrets)
 
 ---
 
@@ -198,5 +198,5 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 
 - **Context:** Prod `/health` failed: `TypeError: connect() got an unexpected keyword argument 'channel_binding'` (Neon URL + SQLAlchemy 2.0.30 / asyncpg 0.29).
 - **Decision:** Normalize `DATABASE_URL` by dropping `channel_binding` and mapping `sslmode` → `ssl=require`.
-- **Evidence:** Vercel runtime logs on `flowboard-iota-blond.vercel.app`.
-- **Status:** DECIDED · IMPLEMENTED · VERIFIED pending redeploy
+- **Evidence:** Vercel runtime logs on `flowboard-iota-blond.vercel.app`; unit `test_neon_url_strips_channel_binding_and_maps_sslmode`; smoke `docs/evidence/vercel-prod-smoke.txt`.
+- **Status:** DECIDED · IMPLEMENTED · VERIFIED (`/health` 200 after redeploy)

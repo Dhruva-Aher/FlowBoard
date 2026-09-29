@@ -2,7 +2,7 @@
 
 Multi-tenant collaborative workspace: JWT/RBAC isolation, Kanban with ordered tasks, TipTap docs, and Redis-backed realtime — built for Backend / Full-stack interviews.
 
-**Demo:** Vercel public URL — see [`docs/DEPLOY.md`](docs/DEPLOY.md) (after Neon + Git link)  
+**Demo:** https://flowboard-iota-blond.vercel.app (Vercel Services + Neon; Redis optional / NullRedis)  
 **Local:** `docker compose up --build` → http://localhost:5173 · API http://localhost:8000/docs  
 **Proof:** `pytest` against Postgres/Redis — **not** the Vercel demo numbers
 
@@ -17,7 +17,7 @@ Multi-tenant collaborative workspace: JWT/RBAC isolation, Kanban with ordered ta
 | Auth hardening | Argon2; passwords **>72 bytes** OK; **>1000** → **422** | security + auth tests |
 | Kanban order correctness | Positions **0, 1, …** (`is None` not `or -1`) | `test_task_position_auto_assigned` |
 | Realtime publish path | Task move → Redis publish (Compose/proof) | `test_move_task_publishes_ws_event` |
-| Public demo target | Vercel Services (Vite + FastAPI) | `vercel.json` · deploy Grade **pending** until Neon URL live |
+| Public demo live | SPA + `/health` + register/workspace CRUD on Neon | [`docs/evidence/vercel-prod-smoke.txt`](docs/evidence/vercel-prod-smoke.txt) · Grade A |
 
 \*Re-stamp evidence after commit so SHA matches.
 ## Architecture (short)

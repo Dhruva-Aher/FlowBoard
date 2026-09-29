@@ -3,16 +3,21 @@
 **Demo environment** (this doc) ≠ **proof environment** (`pytest` + Compose).  
 Do not cite Vercel uptime/latency as backend benchmarks.
 
-## Immediate claimable frontend preview
+## Production demo (VERIFIED)
 
-Anonymous CLI cannot finish a full Services (API) build without your logged-in account.
+| Item | Value |
+|------|--------|
+| **URL** | https://flowboard-iota-blond.vercel.app |
+| **Stack** | Vercel Services (Vite + FastAPI) + Neon Postgres (`flowboard-db`) |
+| **Redis** | unset → NullRedis (`/health` reports `"redis":"null"`) |
+| **Project** | `flowboard` · `prj_XMzk6sV318n2GyIB0lloSZDDj0AD` |
+| **Evidence** | `docs/evidence/vercel-prod-smoke.txt` (SPA, health, register, workspace, project, login) |
 
-A **static frontend** temp deploy was published for claim:
+Realtime multi-client sync is **not** claimed on this demo until Upstash `REDIS_URL` is set.
 
-- **URL:** https://temporary-express-vega-blbge3r.vercel.app  
-- **Claim (keep live):** https://vercel.com/claim-deployment?code=6a563929-2040-45ff-b7e2-ce57090377ee  
-- **Expires:** ~60 minutes unless claimed  
-- **Scope:** Vite SPA only — `/api` will not work until Neon + Services deploy below
+## Historical: anonymous static preview
+
+A claimable static-only temp deploy was used before Neon (expired; not production evidence). See `docs/evidence/vercel-frontend-temp.txt`.
 
 ## Architecture (DECIDED)
 
@@ -25,25 +30,23 @@ One Vercel project (`flowboard`) using **Vercel Services**:
 
 Same-origin relative `/api/v1` + `/ws` from the SPA — no separate API hostname required for previews.
 
-## Prerequisites (you must complete)
+## Prerequisites (completed for prod above)
 
-1. **Claim / own the Vercel project** under your account (`dhruva-ahers-projects` / team that owns `prj_XMzk6sV318n2GyIB0lloSZDDj0AD`).
-2. **Install the Vercel GitHub App** on `Dhruva-Aher/FlowBoard`: https://github.com/apps/vercel  
-   Then link the repo in Project Settings → Git.
-3. **Neon Postgres** (Marketplace → Neon → create DB → connect to `flowboard`).  
-   Env injected is usually `DATABASE_URL` (and sometimes `DATABASE_URL_UNPOOLED`).
-4. **(Optional) Upstash Redis** for realtime pub/sub/presence. Without it the API uses **NullRedis** (CRUD works; cross-client live sync is off).
-5. Set secrets (Production + Preview):
+1. Own the Vercel project under your account (`dhruva-ahers-projects` / team that owns `prj_XMzk6sV318n2GyIB0lloSZDDj0AD`).
+2. **(Optional)** Install the Vercel GitHub App on `Dhruva-Aher/FlowBoard` and link Git for auto-deploys: https://github.com/apps/vercel
+3. Neon Postgres (Marketplace → Neon → `flowboard-db` connected). Env: `DATABASE_URL`.
+4. **(Optional) Upstash Redis** for realtime pub/sub/presence. Without it the API uses **NullRedis**.
+5. Secrets (Production + Preview):
 
 | Key | Notes |
 |-----|--------|
 | `SECRET_KEY` | `openssl rand -hex 32` |
 | `REFRESH_SECRET_KEY` | `openssl rand -hex 32` |
 | `ENVIRONMENT` | `production` |
-| `FRONTEND_URL` | `https://<your-prod-domain>` |
+| `FRONTEND_URL` | `https://flowboard-iota-blond.vercel.app` |
 | `CORS_ORIGINS` | optional extras; `*.vercel.app` already allowed by regex |
 | `RUN_MIGRATIONS_ON_STARTUP` | `true` on first deploys |
-| `DATABASE_URL` | from Neon (asyncpg normalized in code) |
+| `DATABASE_URL` | from Neon (asyncpg normalized in code; `channel_binding` stripped) |
 | `REDIS_URL` | from Upstash if used |
 | `DATABASE_URL_SYNC` | optional; derived from `DATABASE_URL` if unset |
 
@@ -76,17 +79,18 @@ Git push to the linked production branch also deploys once Git is connected.
 ## Verify after deploy
 
 ```bash
-curl -sS https://<host>/health
-curl -sS -o /dev/null -w "%{http_code}\n" https://<host>/
-curl -sS -X POST https://<host>/api/v1/auth/register \
+curl -sS https://flowboard-iota-blond.vercel.app/health
+curl -sS -o /dev/null -w "%{http_code}\n" https://flowboard-iota-blond.vercel.app/
+curl -sS -X POST https://flowboard-iota-blond.vercel.app/api/v1/auth/register \
   -H 'content-type: application/json' \
   -d '{"email":"demo@example.com","name":"Demo","password":"password123"}'
 ```
 
-Record the production URL in `docs/METRICS.md` claim **C15** only after these succeed (Grade A).
+Claim **C15** stamped Grade A in `docs/METRICS.md` from `docs/evidence/vercel-prod-smoke.txt`.
 
 ## Project IDs (this session)
 
 - Vercel project: `flowboard` · `prj_XMzk6sV318n2GyIB0lloSZDDj0AD`
 - Account/team id seen at create: `team_hcg1M2YFvH8HIomGC87hGd0S`
-- Anonymous temp deploy (expired/claimable, pre-config): see chat transcript — not production evidence
+- Neon: `flowboard-db` (Marketplace)
+- Anonymous temp deploy (expired, pre-config): `docs/evidence/vercel-frontend-temp.txt` — not production evidence
