@@ -16,3 +16,7 @@ __pycache__/
 backend/celerybeat-schedule
 .vercel
 .env*
+
+# Local preview artifacts
+.playwright-mcp/
+magicui-*.png
