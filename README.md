@@ -1,142 +1,70 @@
-# 📌 FlowBoard
+# FlowBoard
 
-A production-grade full-stack collaborative workspace platform for teams to manage projects, tasks, and documents in real time.
+Multi-tenant collaborative workspace: JWT/RBAC isolation, Kanban with ordered tasks, TipTap docs, and Redis-backed realtime — built for Backend / Full-stack interviews.
 
----
+**Demo:** Vercel public URL — see [`docs/DEPLOY.md`](docs/DEPLOY.md) (after Neon + Git link)  
+**Local:** `docker compose up --build` → http://localhost:5173 · API http://localhost:8000/docs  
+**Proof:** `pytest` against Postgres/Redis — **not** the Vercel demo numbers
 
-## 🚀 Overview
+[![Backend Tests](https://github.com/Dhruva-Aher/FlowBoard/actions/workflows/ci.yml/badge.svg)](https://github.com/Dhruva-Aher/FlowBoard/actions/workflows/ci.yml)
 
-FlowBoard is a multi-tenant SaaS-style application that enables teams to:
-- create workspaces and manage members
-- organize projects with Kanban boards
-- collaborate through real-time updates
-- write and edit rich-text documents
+## Outcomes (verified)
 
-The system is designed with a modern full-stack architecture using FastAPI, React, PostgreSQL, and Redis, with real-time synchronization and background processing.
+| Outcome | Metric | Evidence |
+|--------|--------|----------|
+| Backend suite green | **59** pytest cases, **0** failures (~15s) | [`docs/evidence/pytest-summary.txt`](docs/evidence/pytest-summary.txt) · Grade A* |
+| Fail-closed tenant gate | Non-member → **403** on workspace/docs; WS membership denied for outsiders | `tests/integration/test_*` |
+| Auth hardening | Argon2; passwords **>72 bytes** OK; **>1000** → **422** | security + auth tests |
+| Kanban order correctness | Positions **0, 1, …** (`is None` not `or -1`) | `test_task_position_auto_assigned` |
+| Realtime publish path | Task move → Redis publish (Compose/proof) | `test_move_task_publishes_ws_event` |
+| Public demo target | Vercel Services (Vite + FastAPI) | `vercel.json` · deploy Grade **pending** until Neon URL live |
 
----
+\*Re-stamp evidence after commit so SHA matches.
+## Architecture (short)
 
-## ✨ Features
+```
+React/TS (Vite) ──REST/WS──► FastAPI (async SQLAlchemy)
+                                │
+                     ┌──────────┼──────────┐
+                     ▼          ▼          ▼
+                PostgreSQL    Redis     Celery worker
+              (tenants/RBAC) (pubsub/   (email/export
+                              presence)  stubs → AWS*)
+```
 
-### 🔐 Authentication & Authorization
-- JWT-based authentication with refresh tokens  
-- Role-based access control (Owner / Admin / Member)  
-- Secure multi-user workspace isolation  
+\*Celery tasks for SES/S3 are implemented; they need real AWS credentials — not claimed as a live notification system.
 
-### 🏢 Workspaces & Projects
-- Multi-tenant workspace architecture  
-- Project creation with default Kanban boards  
-- Workspace member management and invitations  
+**Owned hard parts vs typical Kanban tutorials:** workspace membership on every resource path; role matrix (owner/admin/member/viewer); WebSocket **JWT + membership** before accept (close **4003** if outsider); refresh-token revoke-on-rotate; ProseMirror JSON contract for TipTap; integer task ordering without the falsy-`0` trap.
 
-### 📋 Kanban Board
-- Drag-and-drop task management  
-- Persistent task ordering and column structure  
-- Real-time updates across multiple clients  
+## Quick start
 
-### 📝 Documents
-- Rich-text editor powered by TipTap  
-- Autosave with debounced updates  
-- Structured JSON storage  
-- Image embedding support  
+```bash
+cp .env.example .env
+docker compose up --build
+# Frontend http://localhost:5173 · API http://localhost:8000/docs
+```
 
-### ⚡ Real-Time Collaboration
-- WebSockets for live updates  
-- Redis pub/sub for cross-client synchronization  
-- Presence tracking across users  
+```bash
+cd backend && pip install -r requirements-dev.txt
+# Postgres + Redis required (compose or local)
+pytest tests/ -v
+```
 
-### 🔄 Background Processing
-- Celery workers with Redis broker  
-- Async tasks for notifications and system events  
+## Docs
 
----
+| Doc | Purpose |
+|-----|---------|
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Vercel Services deploy + Neon/Upstash |
+| [`docs/METRICS.md`](docs/METRICS.md) | Claim table, grades, demo vs proof |
+| [`docs/POSITIONING.md`](docs/POSITIONING.md) | Differentiator vs peers |
+| [`docs/INTERVIEW_GUIDE.md`](docs/INTERVIEW_GUIDE.md) | Talking points + traps |
+| [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product/design/honesty decisions |
+| [`docs/resume/XYZ_SCAFFOLDS.md`](docs/resume/XYZ_SCAFFOLDS.md) | Google XYZ worksheets (not polished bullets) |
 
-## 🏗️ Tech Stack
+## Stack
 
-### Backend
-- FastAPI  
-- Async SQLAlchemy  
-- PostgreSQL  
-- Redis  
-- WebSockets  
-- Celery  
+FastAPI · async SQLAlchemy · PostgreSQL · Redis pub/sub · Celery · React + TypeScript · Zustand · TanStack Query · TipTap · dnd-kit · Docker Compose · GitHub Actions
 
-### Frontend
-- React + TypeScript  
-- Zustand (state management)  
-- TanStack Query (data fetching + caching)  
-- Tailwind CSS  
-- TipTap (rich-text editor)  
-- dnd-kit (drag-and-drop)  
+## Author
 
-### DevOps
-- Docker & Docker Compose  
-- GitHub Actions (CI)  
-
----
-
-## 🧠 Architecture Highlights
-
-- Multi-tenant system design with workspace-level data isolation  
-- RBAC enforcement across all workspace operations  
-- Real-time event system using WebSockets + Redis pub/sub  
-- Async backend design for scalable API handling  
-- Structured document storage using ProseMirror JSON format  
-
----
-
-## ⚙️ Getting Started
-
-### 1. Clone the repo
-git clone https://github.com/Dhruva-Aher/flowboard.git  
-cd flowboard  
-
-### 2. Setup environment
-cp .env.example .env  
-
-### 3. Run the app
-docker compose up --build  
-
----
-
-## 🌐 Access
-
-- Frontend: http://localhost:5173  
-- Backend API: http://localhost:8000  
-- API Docs: http://localhost:8000/docs  
-
----
-
-## 🧪 Running Tests
-
-cd backend  
-pytest  
-
----
-
-## 🛠️ Key Engineering Challenges Solved
-
-- Fixed API contract mismatches (JSON vs form-encoded auth flows)  
-- Resolved database inconsistencies (table naming, datetime handling)  
-- Debugged real-time connection issues across Docker networking  
-- Implemented safe validation error handling to prevent 500 crashes  
-- Designed consistent document schema for TipTap editor  
-
----
-
-## 📈 Future Improvements
-
-- File upload support for documents (S3 integration)  
-- Notification system (in-app + email)  
-- Advanced document collaboration (cursor presence, comments)  
-- Production deployment with Kubernetes / cloud infra  
-
----
-
-## 👤 Author
-
-Dhruva Aher  
-- GitHub: https://github.com/Dhruva-Aher  
-- LinkedIn: https://linkedin.com/in/dhruva-aher  
-
----
-
+Dhruva Aher · [GitHub](https://github.com/Dhruva-Aher) · [LinkedIn](https://linkedin.com/in/dhruva-aher)

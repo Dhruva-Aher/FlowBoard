@@ -30,9 +30,9 @@ const FEATURES = [
   },
   {
     icon: Users,
-    title: 'Real-time Collaboration',
+    title: 'Live updates',
     description:
-      "See teammates' presence and live edits the moment they happen. WebSocket-powered sync keeps everyone on the same page — always.",
+      'Board mutations publish over Redis pub/sub in the full stack. The Vercel demo degrades gracefully when Redis is unset; Compose remains the realtime proof path.',
     iconColor: 'text-emerald-400',
     iconBg: 'bg-emerald-500/10',
     hoverBorder: 'hover:border-emerald-500/30',
@@ -53,19 +53,14 @@ const FEATURES = [
 ]
 
 const PERKS = [
-  'Free to start',
-  'No credit card required',
-  'Unlimited workspaces',
+  'Kanban + docs in one workspace',
   'Role-based access control',
+  'Docker Compose local stack',
+  'OpenAPI docs included',
 ]
 
-const STATS = [
-  { value: '12,000+', label: 'Teams worldwide' },
-  { value: '500K+',   label: 'Tasks shipped'   },
-  { value: '99.9%',   label: 'Uptime SLA'      },
-]
-
-const LOGOS = ['Axiom', 'Cascade', 'Meridian', 'Helix', 'Stratum', 'Orbit']
+// Marketing filler (fake customer logos / vanity stats) intentionally omitted —
+// portfolio honesty: only ship claims backed by docs/METRICS.md.
 
 // ─── Board mockup data ────────────────────────────────────────────────────────
 
@@ -310,9 +305,6 @@ export default function Landing() {
   const featuresRef = useRef<HTMLElement>(null)
   const featuresInView = useInView(featuresRef, { once: true, margin: '-80px' })
 
-  const statsRef = useRef<HTMLElement>(null)
-  const statsInView = useInView(statsRef, { once: true, margin: '-80px' })
-
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 overflow-x-hidden">
 
@@ -492,28 +484,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Logo bar ───────────────────────────────────────────────────────── */}
-      <section className="py-10 px-6 border-y border-neutral-800/40">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-center text-[10px] font-bold text-neutral-700
-            uppercase tracking-[0.2em] mb-6">
-            Trusted by teams at
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-8">
-            {LOGOS.map((name) => (
-              <span
-                key={name}
-                className="text-sm font-semibold text-neutral-700
-                  hover:text-neutral-400 transition-colors duration-200
-                  cursor-default tracking-tight select-none"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Features ───────────────────────────────────────────────────────── */}
       <section ref={featuresRef} className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
@@ -591,37 +561,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Stats band ─────────────────────────────────────────────────────── */}
-      <section
-        ref={statsRef}
-        className="py-14 px-6 border-y border-neutral-800/40 bg-neutral-900/20"
-      >
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial="hidden"
-            animate={statsInView ? 'visible' : 'hidden'}
-            variants={stagger}
-            className="grid grid-cols-3 divide-x divide-neutral-800/60"
-          >
-            {STATS.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                variants={fadeUp}
-                custom={i}
-                className="text-center px-4"
-              >
-                <div className="text-3xl sm:text-4xl font-bold
-                  bg-gradient-to-br from-white to-neutral-400
-                  bg-clip-text text-transparent mb-1 tabular-nums">
-                  {stat.value}
-                </div>
-                <div className="text-xs text-neutral-600 font-medium">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* ── CTA ────────────────────────────────────────────────────────────── */}
       <section className="relative py-28 px-6 overflow-hidden">
 
@@ -642,15 +581,15 @@ export default function Landing() {
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <p className="text-[11px] font-bold text-brand-400 uppercase tracking-[0.18em] mb-4">
-              Get started today
+              Try the demo
             </p>
             <h2 className="text-4xl sm:text-5xl font-bold text-white
               tracking-[-0.02em] leading-[1.1] mb-4">
               Ready to flow?
             </h2>
             <p className="text-neutral-500 mb-9 text-sm max-w-sm mx-auto leading-relaxed">
-              Join thousands of teams shipping faster with FlowBoard.
-              Free to start — no credit card required.
+              Create a workspace, move a card, and edit a doc — the full-stack
+              portfolio demo of FlowBoard.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

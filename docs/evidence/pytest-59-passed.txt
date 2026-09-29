@@ -1,0 +1,107 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.2.0, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /workspace/backend
+configfile: pytest.ini
+plugins: asyncio-0.23.6, Faker-40.40.0, cov-5.0.0, anyio-4.15.1
+asyncio: mode=Mode.AUTO
+collecting ... collected 59 items
+
+tests/integration/test_auth.py::test_register_success PASSED             [  1%]
+tests/integration/test_auth.py::test_register_duplicate_email PASSED     [  3%]
+tests/integration/test_auth.py::test_register_weak_password PASSED       [  5%]
+tests/integration/test_auth.py::test_register_long_password_succeeds PASSED [  6%]
+tests/integration/test_auth.py::test_register_password_too_long_returns_422 PASSED [  8%]
+tests/integration/test_auth.py::test_login_after_long_password_registration PASSED [ 10%]
+tests/integration/test_auth.py::test_login_success PASSED                [ 11%]
+tests/integration/test_auth.py::test_login_wrong_password PASSED         [ 13%]
+tests/integration/test_auth.py::test_login_unknown_email PASSED          [ 15%]
+tests/integration/test_auth.py::test_login_missing_fields_returns_422_not_500 PASSED [ 16%]
+tests/integration/test_auth.py::test_login_empty_body_returns_422_not_500 PASSED [ 18%]
+tests/integration/test_auth.py::test_get_me PASSED                       [ 20%]
+tests/integration/test_auth.py::test_get_me_unauthenticated PASSED       [ 22%]
+tests/integration/test_auth.py::test_logout PASSED                       [ 23%]
+tests/integration/test_documents.py::test_create_document_returns_valid_tiptap_content PASSED [ 25%]
+tests/integration/test_documents.py::test_create_document_default_title PASSED [ 27%]
+tests/integration/test_documents.py::test_create_document_requires_auth PASSED [ 28%]
+tests/integration/test_documents.py::test_list_documents PASSED          [ 30%]
+tests/integration/test_documents.py::test_list_documents_requires_auth PASSED [ 32%]
+tests/integration/test_documents.py::test_get_document PASSED            [ 33%]
+tests/integration/test_documents.py::test_get_nonexistent_document_returns_404 PASSED [ 35%]
+tests/integration/test_documents.py::test_update_document_title PASSED   [ 37%]
+tests/integration/test_documents.py::test_update_document_title_persists PASSED [ 38%]
+tests/integration/test_documents.py::test_update_document_content PASSED [ 40%]
+tests/integration/test_documents.py::test_update_document_content_persists PASSED [ 42%]
+tests/integration/test_documents.py::test_update_sets_last_edited_by PASSED [ 44%]
+tests/integration/test_documents.py::test_update_document_requires_auth PASSED [ 45%]
+tests/integration/test_documents.py::test_non_member_cannot_update_document PASSED [ 47%]
+tests/integration/test_documents.py::test_delete_document PASSED         [ 49%]
+tests/integration/test_documents.py::test_delete_document_requires_auth PASSED [ 50%]
+tests/integration/test_tasks.py::test_create_task PASSED                 [ 52%]
+tests/integration/test_tasks.py::test_task_position_auto_assigned PASSED [ 54%]
+tests/integration/test_tasks.py::test_move_task_publishes_ws_event PASSED [ 55%]
+tests/integration/test_tasks.py::test_get_task PASSED                    [ 57%]
+tests/integration/test_tasks.py::test_update_task PASSED                 [ 59%]
+tests/integration/test_tasks.py::test_delete_task PASSED                 [ 61%]
+tests/integration/test_websocket_authz.py::test_is_workspace_member_rejects_invalid_uuids PASSED [ 62%]
+tests/integration/test_websocket_authz.py::test_is_workspace_member_false_for_unknown_pair PASSED [ 64%]
+tests/integration/test_websocket_authz.py::test_member_true_after_workspace_create PASSED [ 66%]
+tests/integration/test_websocket_authz.py::test_outsider_is_not_member PASSED [ 67%]
+tests/integration/test_websocket_authz.py::test_access_token_type_claim_present PASSED [ 69%]
+tests/integration/test_workspaces.py::test_create_workspace PASSED       [ 71%]
+tests/integration/test_workspaces.py::test_list_workspaces PASSED        [ 72%]
+tests/integration/test_workspaces.py::test_duplicate_slug_rejected PASSED [ 74%]
+tests/integration/test_workspaces.py::test_non_member_cannot_access_workspace PASSED [ 76%]
+tests/integration/test_workspaces.py::test_get_workspace PASSED          [ 77%]
+tests/integration/test_workspaces.py::test_list_workspaces_requires_auth PASSED [ 79%]
+tests/unit/test_permissions.py::test_owner_can_do_everything PASSED      [ 81%]
+tests/unit/test_permissions.py::test_viewer_is_read_only PASSED          [ 83%]
+tests/unit/test_permissions.py::test_member_cannot_delete_workspace PASSED [ 84%]
+tests/unit/test_permissions.py::test_admin_cannot_change_roles PASSED    [ 86%]
+tests/unit/test_permissions.py::test_unknown_permission_returns_false PASSED [ 88%]
+tests/unit/test_security.py::test_password_hash_and_verify PASSED        [ 89%]
+tests/unit/test_security.py::test_password_beyond_72_bytes_hashes_correctly PASSED [ 91%]
+tests/unit/test_security.py::test_two_different_long_passwords_do_not_collide PASSED [ 93%]
+tests/unit/test_security.py::test_access_token_decode PASSED             [ 94%]
+tests/unit/test_security.py::test_access_token_expired PASSED            [ 96%]
+tests/unit/test_security.py::test_refresh_token_verify PASSED            [ 98%]
+tests/unit/test_security.py::test_refresh_tokens_are_unique PASSED       [100%]
+
+=============================== warnings summary ===============================
+../../home/ubuntu/.local/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /home/ubuntu/.local/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+app/main.py:36
+  /workspace/backend/app/main.py:36: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @application.on_event("startup")
+
+../../home/ubuntu/.local/lib/python3.12/site-packages/fastapi/applications.py:4495
+  /home/ubuntu/.local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/integration/test_auth.py::test_register_success
+  /home/ubuntu/.local/lib/python3.12/site-packages/passlib/handlers/argon2.py:716: DeprecationWarning: Accessing argon2.__version__ is deprecated and will be removed in a future release. Use importlib.metadata directly to query for structlog's packaging metadata.
+    _argon2_cffi.__version__, max_version)
+
+tests/integration/test_auth.py: 2 warnings
+tests/integration/test_documents.py: 42 warnings
+tests/integration/test_tasks.py: 31 warnings
+tests/integration/test_websocket_authz.py: 5 warnings
+tests/integration/test_workspaces.py: 9 warnings
+tests/unit/test_security.py: 1 warning
+  /home/ubuntu/.local/lib/python3.12/site-packages/jose/jwt.py:311: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = timegm(datetime.utcnow().utctimetuple())
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 59 passed, 94 warnings in 14.70s =======================

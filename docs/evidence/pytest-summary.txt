@@ -1,0 +1,54 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.2.0, pluggy-1.6.0
+rootdir: /workspace/backend
+configfile: pytest.ini
+plugins: asyncio-0.23.6, Faker-40.40.0, cov-5.0.0, anyio-4.15.1
+asyncio: mode=Mode.AUTO
+collected 59 items
+
+tests/integration/test_auth.py ..............                            [ 23%]
+tests/integration/test_documents.py ................                     [ 50%]
+tests/integration/test_tasks.py ......                                   [ 61%]
+tests/integration/test_websocket_authz.py .....                          [ 69%]
+tests/integration/test_workspaces.py ......                              [ 79%]
+tests/unit/test_permissions.py .....                                     [ 88%]
+tests/unit/test_security.py .......                                      [100%]
+
+=============================== warnings summary ===============================
+../../home/ubuntu/.local/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /home/ubuntu/.local/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+app/main.py:36
+  /workspace/backend/app/main.py:36: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @application.on_event("startup")
+
+../../home/ubuntu/.local/lib/python3.12/site-packages/fastapi/applications.py:4495
+  /home/ubuntu/.local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/integration/test_auth.py::test_register_success
+  /home/ubuntu/.local/lib/python3.12/site-packages/passlib/handlers/argon2.py:716: DeprecationWarning: Accessing argon2.__version__ is deprecated and will be removed in a future release. Use importlib.metadata directly to query for structlog's packaging metadata.
+    _argon2_cffi.__version__, max_version)
+
+tests/integration/test_auth.py: 2 warnings
+tests/integration/test_documents.py: 42 warnings
+tests/integration/test_tasks.py: 31 warnings
+tests/integration/test_websocket_authz.py: 5 warnings
+tests/integration/test_workspaces.py: 9 warnings
+tests/unit/test_security.py: 1 warning
+  /home/ubuntu/.local/lib/python3.12/site-packages/jose/jwt.py:311: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = timegm(datetime.utcnow().utctimetuple())
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 59 passed, 94 warnings in 14.85s =======================

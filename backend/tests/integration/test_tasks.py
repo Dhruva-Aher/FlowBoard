@@ -1,7 +1,8 @@
 import pytest
+import pytest_asyncio
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def workspace_and_project(client, auth_headers):
     ws = await client.post(
         "/api/v1/workspaces",
@@ -25,7 +26,7 @@ async def workspace_and_project(client, auth_headers):
 
 @pytest.mark.asyncio
 async def test_create_task(client, auth_headers, workspace_and_project):
-    data = await workspace_and_project
+    data = workspace_and_project
     resp = await client.post(
         f"/api/v1/columns/{data['col_id']}/tasks",
         json={"title": "Fix bug #123", "priority": "high"},
@@ -38,7 +39,7 @@ async def test_create_task(client, auth_headers, workspace_and_project):
 
 @pytest.mark.asyncio
 async def test_task_position_auto_assigned(client, auth_headers, workspace_and_project):
-    data = await workspace_and_project
+    data = workspace_and_project
     resp1 = await client.post(
         f"/api/v1/columns/{data['col_id']}/tasks",
         json={"title": "First"},
@@ -54,8 +55,10 @@ async def test_task_position_auto_assigned(client, auth_headers, workspace_and_p
 
 
 @pytest.mark.asyncio
-async def test_move_task_publishes_ws_event(client, auth_headers, workspace_and_project, mock_redis):
-    data = await workspace_and_project
+async def test_move_task_publishes_ws_event(
+    client, auth_headers, workspace_and_project, mock_redis
+):
+    data = workspace_and_project
     task_resp = await client.post(
         f"/api/v1/columns/{data['col_id']}/tasks",
         json={"title": "Move me"},
@@ -82,7 +85,7 @@ async def test_move_task_publishes_ws_event(client, auth_headers, workspace_and_
 
 @pytest.mark.asyncio
 async def test_get_task(client, auth_headers, workspace_and_project):
-    data = await workspace_and_project
+    data = workspace_and_project
     create_resp = await client.post(
         f"/api/v1/columns/{data['col_id']}/tasks",
         json={"title": "Get me"},
@@ -96,7 +99,7 @@ async def test_get_task(client, auth_headers, workspace_and_project):
 
 @pytest.mark.asyncio
 async def test_update_task(client, auth_headers, workspace_and_project):
-    data = await workspace_and_project
+    data = workspace_and_project
     create_resp = await client.post(
         f"/api/v1/columns/{data['col_id']}/tasks",
         json={"title": "Original"},
@@ -115,7 +118,7 @@ async def test_update_task(client, auth_headers, workspace_and_project):
 
 @pytest.mark.asyncio
 async def test_delete_task(client, auth_headers, workspace_and_project):
-    data = await workspace_and_project
+    data = workspace_and_project
     create_resp = await client.post(
         f"/api/v1/columns/{data['col_id']}/tasks",
         json={"title": "Delete me"},
