@@ -191,3 +191,12 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 - **Decision:** Prepare `scripts/vercel-setup-and-deploy.sh` (link → secrets → Neon → optional Upstash → `--prod`). Block on one owner action: complete `vercel login` device URL. Then re-run the script.
 - **Why:** No API path exists from this agent token to bill/provision Neon on the user’s team.
 - **Status:** DECIDED · script IMPLEMENTED · Neon VERIFIED pending login
+
+---
+
+## D19 — Strip Neon `channel_binding` for asyncpg
+
+- **Context:** Prod `/health` failed: `TypeError: connect() got an unexpected keyword argument 'channel_binding'` (Neon URL + SQLAlchemy 2.0.30 / asyncpg 0.29).
+- **Decision:** Normalize `DATABASE_URL` by dropping `channel_binding` and mapping `sslmode` → `ssl=require`.
+- **Evidence:** Vercel runtime logs on `flowboard-iota-blond.vercel.app`.
+- **Status:** DECIDED · IMPLEMENTED · VERIFIED pending redeploy
