@@ -3,6 +3,7 @@
 Multi-tenant collaborative workspace: JWT/RBAC isolation, Kanban with ordered tasks, TipTap docs, and Redis-backed realtime — built for Backend / Full-stack interviews.
 
 **Demo:** https://flowboard-iota-blond.vercel.app (Vercel Services + Neon; Redis optional / NullRedis)  
+**UI:** [Magic UI](https://magicui.design) + shadcn/ui (Tailwind v4)  
 **Local:** `docker compose up --build` → http://localhost:5173 · API http://localhost:8000/docs  
 **Proof:** `pytest` against Postgres/Redis — **not** the Vercel demo numbers
 
