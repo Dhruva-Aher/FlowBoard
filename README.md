@@ -26,12 +26,13 @@ Workspace JWT/RBAC, ordered Kanban, TipTap docs, and Redis-backed realtime fanou
 
 *Public Vercel + Neon demo (interactive walkthrough). Redis pub/sub fanout is proven under Docker Compose / pytest with Redis 7.*
 
-| Metric on screenshot | Value |
-|----------------------|-------|
-| Demo badge | Multi-tenant workspace · portfolio demo |
-| Pitch | Boards, docs, RBAC · fail-closed auth · ordered Kanban |
+| Metric on `/health` crop | Value |
+|--------------------------|-------|
+| `status` | **ok** |
+| `environment` | **production** |
+| `redis` | **null** |
 
-`/health` crop (`redis: "null"`): [`assets/health-ok.png`](./assets/health-ok.png) · Workspace docs preview: [`assets/workspace-docs.png`](./assets/workspace-docs.png) · Evidence: [docs/METRICS.md](docs/METRICS.md)
+`/health` crop: [`assets/health-ok.png`](./assets/health-ok.png) · Workspace with docs: [`assets/workspace-docs.png`](./assets/workspace-docs.png) · Evidence: [docs/METRICS.md](docs/METRICS.md)
 
 ---
 
