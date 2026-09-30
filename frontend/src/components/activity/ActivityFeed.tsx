@@ -73,11 +73,11 @@ export default function ActivityFeed({ workspaceId }: Props) {
               <span className="text-neutral-300 capitalize">
                 {log.entity_type}
               </span>
-              {log.meta?.entity_name && (
+              {typeof log.meta?.entity_name === 'string' && (
                 <span className="text-neutral-400">
                   {' '}
                   &ldquo;
-                  <span className="text-neutral-200">{log.meta.entity_name as string}</span>
+                  <span className="text-neutral-200">{log.meta.entity_name}</span>
                   &rdquo;
                 </span>
               )}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "framework": "vite",
+      "root": "frontend",
+      "installCommand": "npm ci",
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist",
+      "rewrites": [
+        { "source": "/(.*)", "destination": "/index.html" }
+      ]
+    },
+    "backend": {
+      "framework": "fastapi",
+      "root": "backend",
+      "entrypoint": "app/main.py",
+      "installCommand": "pip install -r requirements.txt"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "backend" } },
+    { "source": "/ws/(.*)", "destination": { "service": "backend" } },
+    { "source": "/docs", "destination": { "service": "backend" } },
+    { "source": "/docs/(.*)", "destination": { "service": "backend" } },
+    { "source": "/openapi.json", "destination": { "service": "backend" } },
+    { "source": "/health", "destination": { "service": "backend" } },
+    { "source": "/(.*)", "destination": { "service": "frontend" } }
+  ]
+}

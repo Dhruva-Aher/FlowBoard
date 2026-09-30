@@ -1,0 +1,6 @@
+Temporary frontend-only demo (static Vite dist)
+URL: https://temporary-express-vega-blbge3r.vercel.app
+Claim: https://vercel.com/claim-deployment?code=6a563929-2040-45ff-b7e2-ce57090377ee
+Verified: HTTP/2 200, content-type text/html, body contains "FlowBoard"
+Note: API/WS not included in this anonymous static deploy.
+Full stack needs Neon + logged-in Vercel Services deploy (docs/DEPLOY.md).

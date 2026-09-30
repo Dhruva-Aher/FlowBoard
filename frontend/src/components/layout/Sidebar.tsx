@@ -52,13 +52,13 @@ export default function Sidebar() {
   const isActive = (path: string) => location.pathname === path
 
   return (
-    <aside className="w-60 shrink-0 bg-neutral-900 border-r border-neutral-800 flex flex-col h-full">
+    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-4 py-4 border-b border-neutral-800">
-        <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
+      <div className="flex items-center gap-2 border-b border-sidebar-border px-4 py-4">
+        <div className="flex size-7 items-center justify-center rounded-lg bg-brand-600">
           <Zap size={14} className="text-white" />
         </div>
-        <span className="font-bold text-white text-sm tracking-wide">FlowBoard</span>
+        <span className="font-display text-sm font-extrabold tracking-tight">FlowBoard</span>
       </div>
 
       {/* Main nav */}
@@ -145,10 +145,12 @@ export default function Sidebar() {
                         <Settings size={13} /> Settings
                       </Link>
                       <Link
-                        to={`/app/workspace/${ws.id}/docs/new`}
+                        to={`/app/workspace/${ws.id}/docs`}
                         className={clsx(
                           'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors',
-                          'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800'
+                          location.pathname.includes(`/workspace/${ws.id}/docs`)
+                            ? 'text-white bg-neutral-800'
+                            : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800'
                         )}
                       >
                         <FileText size={13} /> Documents

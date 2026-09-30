@@ -24,13 +24,15 @@ async def create(
     workspace_id: UUID,
     title: str,
     created_by: UUID,
+    content: dict | None = None,
 ) -> Document:
-    # Must be a valid ProseMirror/TipTap document — bare `{}` renders blank
+    from app.services.document_content import EMPTY_DOC
+
     doc = Document(
         workspace_id=workspace_id,
         title=title,
         created_by=created_by,
-        content={"type": "doc", "content": [{"type": "paragraph"}]},
+        content=content if isinstance(content, dict) and content.get("type") == "doc" else EMPTY_DOC,
     )
     db.add(doc)
     await db.flush()

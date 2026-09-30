@@ -2,6 +2,7 @@ import { useState, useEffect, FormEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { api } from '@/lib/api'
+import { apiErrorMessage } from '@/lib/errors'
 import { useAuthStore } from '@/store/authStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import type { Workspace } from '@/types'
@@ -95,10 +96,7 @@ function CreateWorkspaceModal({ onClose }: { onClose: () => void }) {
       onClose()
     },
     onError: (err: unknown) => {
-      const msg =
-        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
-        'Failed to create workspace.'
-      setError(msg)
+      setError(apiErrorMessage(err, 'Failed to create workspace.'))
     },
   })
 
@@ -196,7 +194,7 @@ function CreateWorkspaceModal({ onClose }: { onClose: () => void }) {
               <button
                 type="submit"
                 disabled={!name.trim() || !slug.trim() || create.isPending}
-                className="px-4 py-2 text-sm font-medium bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-lg bg-teal-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-teal-300 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {create.isPending ? 'Creating…' : 'Create workspace'}
               </button>
@@ -319,7 +317,7 @@ function EmptyState({ onNew }: { onNew: () => void }) {
       </p>
       <button
         onClick={onNew}
-        className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-brand-600/20"
+        className="inline-flex items-center gap-2 rounded-xl bg-teal-400 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-teal-500/20 transition-colors hover:bg-teal-300"
       >
         <Plus size={15} />
         Create your first workspace
@@ -360,10 +358,10 @@ export default function Dashboard() {
         <div className="relative flex items-center justify-between px-7 py-6">
           <div>
             <p className="text-xs font-medium text-neutral-500 mb-1 tracking-wide">{dateLabel}</p>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
-              {user ? greeting(user.name) : 'Welcome back'} 👋
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              {user ? greeting(user.name) : 'Welcome back'}
             </h1>
-            <p className="text-sm text-neutral-500 mt-1">
+            <p className="mt-1 text-sm text-white/65">
               {isLoading
                 ? 'Loading your workspaces…'
                 : workspaces.length === 0
@@ -399,7 +397,7 @@ export default function Dashboard() {
       <div className="flex items-center gap-3 mb-8 flex-wrap">
         <button
           onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors shadow-lg shadow-brand-600/15"
+          className="flex items-center gap-2 rounded-xl bg-teal-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-teal-500/15 transition-colors hover:bg-teal-300"
         >
           <Plus size={15} />
           New workspace
@@ -462,7 +460,7 @@ export default function Dashboard() {
               Open a workspace to get started
             </p>
             <p className="text-xs text-neutral-500">
-              Create projects, manage tasks on Kanban boards, and collaborate in real time.
+              Boards for tasks, documents for decisions — open a workspace to create either.
             </p>
           </div>
           <Link

@@ -1,0 +1,8 @@
+[project]
+name = "flowboard-api"
+version = "1.0.0"
+description = "FlowBoard FastAPI backend"
+requires-python = ">=3.12"
+
+[tool.uv]
+dev-dependencies = []

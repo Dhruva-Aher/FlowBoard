@@ -1,8 +1,15 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.pool import NullPool
+
 from app.config import settings
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False, pool_pre_ping=True)
+# Serverless (Vercel) must not reuse connections across invocations — NullPool.
+_engine_kwargs: dict = {"echo": False, "pool_pre_ping": True}
+if settings.ENVIRONMENT in ("production", "preview", "test"):
+    _engine_kwargs["poolclass"] = NullPool
+
+engine = create_async_engine(settings.DATABASE_URL, **_engine_kwargs)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 

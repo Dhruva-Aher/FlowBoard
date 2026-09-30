@@ -14,3 +14,9 @@ __pycache__/
 # OS
 .DS_Store
 backend/celerybeat-schedule
+.vercel
+.env*
+
+# Local preview artifacts
+.playwright-mcp/
+magicui-*.png

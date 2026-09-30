@@ -57,8 +57,9 @@ async def test_non_member_cannot_access_workspace(client, auth_headers):
     )
     login_resp = await client.post(
         "/api/v1/auth/login",
-        json={"email": "other@example.com", "password": "password123"},
+        data={"username": "other@example.com", "password": "password123"},
     )
+    assert login_resp.status_code == 200
     other_headers = {"Authorization": f"Bearer {login_resp.json()['access_token']}"}
     resp = await client.get(f"/api/v1/workspaces/{ws_id}", headers=other_headers)
     assert resp.status_code == 403

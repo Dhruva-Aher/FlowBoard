@@ -3,10 +3,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select
-import redis.asyncio as aioredis
 
 from app.database import get_db
-from app.redis import get_redis
 from app.api.deps import get_current_user, get_workspace_member
 from app.core.permissions import require_permission
 from app.schemas.project import (
@@ -25,8 +23,7 @@ from app.crud import project as project_crud
 from app.core.exceptions import NotFoundException, ForbiddenException
 from app.models.user import User
 from app.models.workspace import WorkspaceMember
-from app.models.project import Project, BoardColumn
-from app.models.task import Task
+from app.models.project import BoardColumn
 
 router = APIRouter()
 

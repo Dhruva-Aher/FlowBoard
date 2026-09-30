@@ -137,11 +137,12 @@ export default function WorkspaceHome() {
   })
 
   const createDoc = useMutation({
-    mutationFn: () =>
-      api.post<{ id: string }>(`/workspaces/${workspaceId}/docs`, { title: 'Untitled document' }).then((r) => r.data),
+    mutationFn: (body: { title: string; template?: string }) =>
+      api
+        .post<{ id: string }>(`/workspaces/${workspaceId}/docs`, body)
+        .then((r) => r.data),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['docs', workspaceId] })
-      // Take the user straight into the new document
       navigate(`/app/workspace/${workspaceId}/docs/${data.id}`)
     },
   })
@@ -231,54 +232,98 @@ export default function WorkspaceHome() {
 
           {/* Documents section */}
           <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-neutral-200 flex items-center gap-2">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 font-semibold text-neutral-200">
                 <FileText size={16} className="text-neutral-500" />
                 Documents
+                {!docsLoading && (
+                  <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-white/45">
+                    {docs.length}
+                  </span>
+                )}
               </h2>
-              <button
-                onClick={() => createDoc.mutate()}
-                disabled={createDoc.isPending}
-                className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white bg-neutral-800 hover:bg-neutral-700 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-              >
-                <Plus size={13} /> New doc
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`/app/workspace/${workspaceId}/docs`}
+                  className="text-xs text-white/45 transition hover:text-white"
+                >
+                  View all
+                </Link>
+                <button
+                  onClick={() => createDoc.mutate({ title: 'Untitled document', template: 'blank' })}
+                  disabled={createDoc.isPending}
+                  className="flex items-center gap-1.5 rounded-lg bg-neutral-800 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:bg-neutral-700 hover:text-white disabled:opacity-50"
+                >
+                  <Plus size={13} /> New doc
+                </button>
+              </div>
             </div>
 
             {docsLoading && (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="bg-neutral-900 rounded-xl h-12 animate-pulse" />
+                  <div key={i} className="h-16 animate-pulse rounded-xl bg-neutral-900" />
                 ))}
               </div>
             )}
 
             {!docsLoading && docs.length === 0 && (
-              <div className="text-center py-10 border-2 border-dashed border-neutral-800 rounded-xl">
-                <FileText size={28} className="mx-auto text-neutral-700 mb-2" />
-                <p className="text-sm text-neutral-500">No documents yet</p>
+              <div className="rounded-xl border-2 border-dashed border-neutral-800 px-4 py-10 text-center">
+                <FileText size={28} className="mx-auto mb-2 text-neutral-700" />
+                <p className="text-sm text-neutral-400">No documents yet</p>
+                <p className="mt-1 text-xs text-neutral-600">
+                  Capture meeting notes or a feature spec next to your boards.
+                </p>
+                <div className="mt-4 flex justify-center gap-2">
+                  <button
+                    onClick={() => createDoc.mutate({ title: 'Meeting notes', template: 'meeting' })}
+                    className="rounded-lg bg-teal-400 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-teal-300"
+                  >
+                    Meeting notes
+                  </button>
+                  <Link
+                    to={`/app/workspace/${workspaceId}/docs`}
+                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 hover:bg-white/5"
+                  >
+                    Browse templates
+                  </Link>
+                </div>
               </div>
             )}
 
             {!docsLoading && docs.length > 0 && (
-              <div className="space-y-1.5">
-                {docs.map((doc) => (
+              <div className="space-y-2">
+                {docs.slice(0, 5).map((doc) => (
                   <Link
                     key={doc.id}
                     to={`/app/workspace/${workspaceId}/docs/${doc.id}`}
-                    className="flex items-center justify-between bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-xl px-4 py-3 transition-all group"
+                    className="group flex items-start justify-between gap-3 rounded-xl border border-neutral-800 bg-neutral-900 px-4 py-3 transition-all hover:border-neutral-700"
                   >
-                    <div className="flex items-center gap-3">
-                      <FileText size={14} className="text-neutral-500" />
-                      <span className="text-sm font-medium text-neutral-200 group-hover:text-white transition-colors">
-                        {doc.title}
-                      </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <FileText size={14} className="shrink-0 text-teal-400/80" />
+                        <span className="truncate text-sm font-medium text-neutral-200 group-hover:text-white">
+                          {doc.title}
+                        </span>
+                      </div>
+                      <p className="mt-1 line-clamp-1 text-xs text-neutral-500">
+                        {doc.preview || 'Empty document'}
+                      </p>
                     </div>
-                    <span className="text-xs text-neutral-600">
-                      {format(parseISO(doc.updated_at), 'MMM d')}
-                    </span>
+                    <div className="shrink-0 text-right text-[11px] text-neutral-600">
+                      <div>{doc.word_count ?? 0} words</div>
+                      <div>{format(parseISO(doc.updated_at), 'MMM d')}</div>
+                    </div>
                   </Link>
                 ))}
+                {docs.length > 5 && (
+                  <Link
+                    to={`/app/workspace/${workspaceId}/docs`}
+                    className="block text-center text-xs text-brand-400 hover:text-brand-300"
+                  >
+                    View {docs.length - 5} more
+                  </Link>
+                )}
               </div>
             )}
           </section>

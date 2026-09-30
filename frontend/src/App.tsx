@@ -6,6 +6,7 @@ import Register from '@/pages/auth/Register'
 import Dashboard from '@/pages/app/Dashboard'
 import WorkspaceHome from '@/pages/app/WorkspaceHome'
 import BoardView from '@/pages/app/BoardView'
+import DocsList from '@/pages/app/DocsList'
 import DocEditor from '@/pages/app/DocEditor'
 import Members from '@/pages/app/Members'
 import Settings from '@/pages/app/Settings'
@@ -31,6 +32,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="workspace/:workspaceId" element={<WorkspaceHome />} />
           <Route path="workspace/:workspaceId/board/:projectId" element={<BoardView />} />
+          <Route path="workspace/:workspaceId/docs" element={<DocsList />} />
           <Route path="workspace/:workspaceId/docs/:docId" element={<DocEditor />} />
           <Route path="workspace/:workspaceId/members" element={<Members />} />
           <Route path="workspace/:workspaceId/settings" element={<Settings />} />

@@ -48,7 +48,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       const p = event.payload as { task_id: string; to_column: string; from_column: string; position: number }
       get().optimisticMoveTask(p.task_id, p.from_column, p.to_column, p.position)
     } else if (event.event === 'task.created') {
-      const task = event.payload as Task
+      const task = event.payload as unknown as Task
       set({ columns: columns.map((c) => c.id === task.column_id ? { ...c, tasks: [...c.tasks, task] } : c) })
     } else if (event.event === 'task.deleted') {
       const { task_id } = event.payload as { task_id: string }

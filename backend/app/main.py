@@ -1,12 +1,41 @@
 import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+
+
+async def _ensure_schema() -> None:
+    """Create tables if missing (Vercel cold start without a separate migrate job)."""
+    from app.database import Base, engine
+    import app.models  # noqa: F401
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    logger.info("Database schema ensured (create_all)")
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    if settings.RUN_MIGRATIONS_ON_STARTUP:
+        try:
+            await _ensure_schema()
+        except Exception:
+            logger.exception("Startup schema ensure failed")
+            raise
+    logger.info(
+        "FlowBoard API started env=%s redis=%s",
+        settings.ENVIRONMENT,
+        "enabled" if settings.redis_enabled else "null",
+    )
+    yield
 
 
 def create_app() -> FastAPI:
@@ -14,28 +43,33 @@ def create_app() -> FastAPI:
         title="FlowBoard API",
         version="1.0.0",
         description="Multi-tenant collaborative workspace API",
+        lifespan=lifespan,
     )
 
-    # CORS middleware
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=[settings.FRONTEND_URL, "http://localhost:5173"],
+        allow_origins=settings.cors_origin_list,
+        allow_origin_regex=r"https://.*\.vercel\.app",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
-    # Include API v1 router
     from app.api.v1 import router as v1_router
+
     application.include_router(v1_router, prefix="/api/v1")
 
-    # Include WebSocket router
     from app.websocket.handler import router as ws_router
+
     application.include_router(ws_router)
 
-    @application.on_event("startup")
-    async def startup_event():
-        logger.info("FlowBoard API started")
+    @application.get("/health")
+    async def health():
+        return {
+            "status": "ok",
+            "environment": settings.ENVIRONMENT,
+            "redis": "enabled" if settings.redis_enabled else "null",
+        }
 
     @application.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):

@@ -73,13 +73,19 @@ export interface Document {
   last_edited_by: string | null
   created_at: string
   updated_at: string
+  preview?: string
+  word_count?: number
 }
 
 export interface DocumentListItem {
   id: string
   title: string
   created_by: string
+  last_edited_by?: string | null
+  created_at?: string
   updated_at: string
+  preview?: string
+  word_count?: number
 }
 
 export interface ActivityLog {

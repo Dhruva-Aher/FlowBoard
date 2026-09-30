@@ -30,8 +30,10 @@ async def create_task(
     result = await db.execute(
         select(func.max(TaskModel.position)).where(TaskModel.column_id == column_id)
     )
-    max_pos = result.scalar() or -1
-    position = max_pos + 1
+    # Use `is None` — `or -1` wrongly treats position 0 as empty and resets every
+    # subsequent task to position 0 (falsy-integer trap).
+    max_pos = result.scalar()
+    position = (max_pos if max_pos is not None else -1) + 1
 
     task = await task_crud.create(
         db,
