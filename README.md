@@ -1,70 +1,79 @@
 # FlowBoard
 
-Multi-tenant collaborative workspace: JWT/RBAC isolation, Kanban with ordered tasks, TipTap docs, and Redis-backed realtime — built for Backend / Full-stack interviews.
+**Multi-tenant collaboration** · Backend / Full-stack · FastAPI · React · PostgreSQL · Redis
 
-**Demo:** https://flowboard-iota-blond.vercel.app (Vercel Services + Neon; Redis optional / NullRedis)  
-**UI:** [Magic UI](https://magicui.design) + shadcn/ui (Tailwind v4)  
-**Local:** `docker compose up --build` → http://localhost:5173 · API http://localhost:8000/docs  
-**Proof:** `pytest` against Postgres/Redis — **not** the Vercel demo numbers
+Workspace JWT/RBAC, ordered Kanban, TipTap docs, and Redis-backed realtime fanout — owned fail-closed tenant gates and WS membership — packaged as a Compose monorepo (`backend` · `frontend`) with a public Vercel + Neon demo.
 
-[![Backend Tests](https://github.com/Dhruva-Aher/FlowBoard/actions/workflows/ci.yml/badge.svg)](https://github.com/Dhruva-Aher/FlowBoard/actions/workflows/ci.yml)
+[![CI](https://github.com/Dhruva-Aher/FlowBoard/actions/workflows/ci.yml/badge.svg)](https://github.com/Dhruva-Aher/FlowBoard/actions/workflows/ci.yml)
 
-## Outcomes (verified)
+| | |
+|--|--|
+| **Demo** | [flowboard-iota-blond.vercel.app](https://flowboard-iota-blond.vercel.app) |
+| **Focus** | Tenant authz · ordering · realtime gates |
+| **Stack** | FastAPI · PostgreSQL · Redis · React · TipTap · Docker |
 
-| Outcome | Metric | Evidence |
-|--------|--------|----------|
-| Backend suite | **62** pytest cases collected; prior green run **59** pass | [`docs/evidence/source-size.txt`](docs/evidence/source-size.txt) · [`pytest-summary.txt`](docs/evidence/pytest-summary.txt) |
-| Fail-closed tenant gate | Non-member → **403** on workspace/docs; WS membership denied for outsiders | `tests/integration/test_*` |
-| Auth hardening | Argon2; passwords **>72 bytes** OK; **>1000** → **422** | security + auth tests |
-| Kanban order correctness | Positions **0, 1, …** (`is None` not `or -1`) | `test_task_position_auto_assigned` |
-| Realtime publish path | Task move → Redis publish (Compose/proof) | `test_move_task_publishes_ws_event` |
-| Public demo live | SPA + `/health` + register/workspace CRUD on Neon | [`docs/evidence/vercel-prod-smoke.txt`](docs/evidence/vercel-prod-smoke.txt) · Grade A |
-| Prod API latency (n=5) | `/health` p50 **~130ms** · SPA p50 **~48ms** · register **~616ms** | [`docs/evidence/prod-api-latency.txt`](docs/evidence/prod-api-latency.txt) · Grade A |
-## Architecture (short)
+---
 
+## Highlights
+
+- **Correctness** — Fail-closed tenancy: non-member workspace/docs → **403**; WebSocket outsider closed **4003** before accept; Kanban column positions **0, 1, …**.
+- **Correctness** — **62** pytest cases collected; documented green run **59** passed (unit + integration) against Postgres + Redis.
+- **Latency (demo)** — Vercel→Neon window: `GET /health` p50 **129.8 ms** (n=5); SPA `GET /` p50 **48.4 ms** (n=5); register **615.6 ms** (n=1).
+- **Operability** — Public smoke: SPA **200**, `/health` **ok** (`redis: null`), register → workspace → project **200** on Neon.
+- **Realtime (Compose proof)** — Task move publishes a Redis channel event under pytest with Redis 7 (same schema as the app).
+
+![FlowBoard landing — public Vercel demo](./assets/system-overview.png)
+
+*Public Vercel + Neon demo (interactive walkthrough). Redis pub/sub fanout is proven under Docker Compose / pytest with Redis 7.*
+
+| Metric on `/health` crop | Value |
+|--------------------------|-------|
+| `status` | **ok** |
+| `environment` | **production** |
+| `redis` | **null** |
+
+`/health` crop: [`assets/health-ok.png`](./assets/health-ok.png) · Workspace with docs: [`assets/workspace-docs.png`](./assets/workspace-docs.png) · Evidence: [docs/METRICS.md](docs/METRICS.md)
+
+---
+
+## Architecture
+
+| Component | Responsibility |
+|-----------|----------------|
+| **Frontend** | React/TS workspace UI — Kanban (dnd-kit), TipTap docs, Magic UI |
+| **API** | FastAPI — JWT auth, RBAC matrix, REST + WS membership gate |
+| **Postgres** | Tenant/workspace truth (Neon on demo; Compose locally) |
+| **Redis** | Pub/sub fanout + presence on Compose; NullRedis on the Vercel demo |
+
+```text
+Client → FastAPI → Postgres (tenants / boards / docs)
+              ↘︎ Redis pub/sub (Compose) → WS subscribers
+              ↘︎ NullRedis stub when REDIS_URL unset (Vercel demo)
 ```
-React/TS (Vite) ──REST/WS──► FastAPI (async SQLAlchemy)
-                                │
-                     ┌──────────┼──────────┐
-                     ▼          ▼          ▼
-                PostgreSQL    Redis     Celery worker
-              (tenants/RBAC) (pubsub/   (email/export
-                              presence)  stubs → AWS*)
-```
 
-\*Celery tasks for SES/S3 are implemented; they need real AWS credentials — not claimed as a live notification system.
+More: [docs/DECISIONS.md](docs/DECISIONS.md) · [docs/POSITIONING.md](docs/POSITIONING.md) · [docs/DEPLOY.md](docs/DEPLOY.md)
 
-**Owned hard parts vs typical Kanban tutorials:** workspace membership on every resource path; role matrix (owner/admin/member/viewer); WebSocket **JWT + membership** before accept (close **4003** if outsider); refresh-token revoke-on-rotate; ProseMirror JSON contract for TipTap; integer task ordering without the falsy-`0` trap.
+---
 
 ## Quick start
 
 ```bash
-cp .env.example .env
-docker compose up --build
-# Frontend http://localhost:5173 · API http://localhost:8000/docs
+open https://flowboard-iota-blond.vercel.app
+cp .env.example .env && docker compose up --build
 ```
 
-```bash
-cd backend && pip install -r requirements-dev.txt
-# Postgres + Redis required (compose or local)
-pytest tests/ -v
-```
+Tests: `cd backend && pip install -r requirements-dev.txt && pytest tests/ -v`  
+Deploy: [docs/DEPLOY.md](docs/DEPLOY.md)
 
-## Docs
+---
 
-| Doc | Purpose |
-|-----|---------|
-| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Vercel Services deploy + Neon/Upstash |
-| [`docs/METRICS.md`](docs/METRICS.md) | Claim table, grades, demo vs proof |
-| [`docs/POSITIONING.md`](docs/POSITIONING.md) | Differentiator vs peers |
-| [`docs/INTERVIEW_GUIDE.md`](docs/INTERVIEW_GUIDE.md) | Talking points + traps |
-| [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product/design/honesty decisions |
-| [`docs/resume/XYZ_SCAFFOLDS.md`](docs/resume/XYZ_SCAFFOLDS.md) | Google XYZ worksheets (not polished bullets) |
+## For interview depth
 
-## Stack
-
-FastAPI · async SQLAlchemy · PostgreSQL · Redis pub/sub · Celery · React + TypeScript · Zustand · TanStack Query · TipTap · dnd-kit · Docker Compose · GitHub Actions
-
-## Author
-
-Dhruva Aher · [GitHub](https://github.com/Dhruva-Aher) · [LinkedIn](https://linkedin.com/in/dhruva-aher)
+| Doc | Use |
+|-----|-----|
+| [METRICS.md](docs/METRICS.md) | Claim ↔ evidence grades |
+| [DECISIONS.md](docs/DECISIONS.md) | Product / honesty decisions |
+| [POSITIONING.md](docs/POSITIONING.md) | Differentiator vs peers |
+| [INTERVIEW_GUIDE.md](docs/INTERVIEW_GUIDE.md) | How to present FlowBoard |
+| [DEPLOY.md](docs/DEPLOY.md) | Vercel Services + Neon / Upstash |
+| [XYZ_SCAFFOLDS.md](docs/resume/XYZ_SCAFFOLDS.md) | Resume XYZ worksheets |
