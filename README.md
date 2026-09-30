@@ -24,15 +24,19 @@ Workspace JWT/RBAC, ordered Kanban, TipTap docs, and Redis-backed realtime — f
 
 ![FlowBoard landing — public Vercel demo](./assets/system-overview.png)
 
-*Public Vercel + Neon demo (interactive walkthrough). Redis pub/sub fanout is proven under Docker Compose / pytest with Redis 7.*
+*Public Vercel + Neon demo. Redis pub/sub fanout is proven under Docker Compose / pytest with Redis 7.*
 
-| Metric on `/health` crop | Value |
-|--------------------------|-------|
+![Kanban board — Platform launch](./assets/board-kanban.png)
+
+*In-app Kanban on the live demo (ordered columns, JWT session). Workspace overview: [`assets/workspace-docs.png`](./assets/workspace-docs.png).*
+
+| Live `/health` (demo) | Value |
+|-----------------------|-------|
 | `status` | **ok** |
 | `environment` | **production** |
-| `redis` | **null** |
+| `redis` | **null** (NullRedis; Compose uses Redis 7) |
 
-`/health` crop: [`assets/health-ok.png`](./assets/health-ok.png) · In-app workspace: [`assets/workspace-docs.png`](./assets/workspace-docs.png) · Evidence: [docs/METRICS.md](docs/METRICS.md)
+Evidence: [docs/METRICS.md](docs/METRICS.md)
 
 ---
 
