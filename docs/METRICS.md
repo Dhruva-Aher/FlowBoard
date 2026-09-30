@@ -66,3 +66,17 @@ pytest tests/ -v
 |------|------|-------------------|--------|
 | WS fanout latency under N clients | p50/p95 ms | local harness publishing N events | **PROPOSED** |
 | Board load for 500 tasks | p95 ms | API timing script | **PROPOSED** |
+
+---
+
+## Cross-verify log — 2026-09-30
+
+| Claim | Result |
+|-------|--------|
+| **68** `def test_` in-tree | **PASS** — `rg` count = 68 |
+| Historical green run **59** passed | **PASS** — `docs/evidence/pytest-summary.txt` unchanged |
+| Prod latency p50 `/health` **129.8 ms**, SPA **48.4 ms**, register **615.6 ms** | **PASS** — `docs/evidence/prod-api-latency.txt` (n=5 window 2026-09-29) |
+| Authz 403 / WS membership / position / Redis publish tests | **PASS** — still named in claim table (not re-executed this pass) |
+| Demo NullRedis vs Compose Redis | **PASS** — README honest |
+
+No claim changes required.

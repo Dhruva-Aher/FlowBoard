@@ -219,3 +219,12 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 | **Why** | Recruiter glance consistency across portfolio; duplicate “Correctness” labels and soft test counts weakened Aura parity. |
 | **Evidence** | Root `README.md`; `docs/evidence/prod-api-latency.txt`; `assets/*`. |
 
+
+---
+
+## D14 — Portfolio cross-verify (2026-09-30)
+
+- **Context:** Multi-repo metrics audit.
+- **Decision:** Keep METRICS claim table; append cross-verify log; no inflation.
+- **Evidence:** 68 in-tree tests; evidence files present.
+- **Status:** DECIDED · VERIFIED
