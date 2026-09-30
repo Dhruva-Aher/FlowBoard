@@ -1,6 +1,6 @@
 from app.core.utils import utcnow
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select
 from uuid import UUID
 from app.models.task import Task
 
@@ -66,7 +66,6 @@ async def move(
     new_position: int,
 ) -> Task:
     old_column_id = task.column_id
-    old_position = task.position
 
     if old_column_id == new_column_id:
         # Reorder within the same column

@@ -5,7 +5,6 @@ from uuid import UUID
 from jose import JWTError
 
 from app.database import get_db
-from app.redis import get_redis
 from app.core.security import decode_access_token
 from app.core.exceptions import CredentialsException
 from app.models.user import User

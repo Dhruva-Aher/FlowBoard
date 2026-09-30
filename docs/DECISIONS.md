@@ -200,3 +200,13 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 - **Decision:** Normalize `DATABASE_URL` by dropping `channel_binding` and mapping `sslmode` → `ssl=require`.
 - **Evidence:** Vercel runtime logs on `flowboard-iota-blond.vercel.app`; unit `test_neon_url_strips_channel_binding_and_maps_sslmode`; smoke `docs/evidence/vercel-prod-smoke.txt`.
 - **Status:** DECIDED · IMPLEMENTED · VERIFIED (`/health` 200 after redeploy)
+
+---
+
+## D20 — Sync `main` to the live Vercel demo; green ruff before merge
+
+- **Context:** Audit found GitHub `main` behind the deployed Magic UI / docs experience; CI red on ruff (unused imports + forward-ref F821).
+- **Decision:** Land Magic UI + portfolio docs on `main` via one merge-ready PR; fix ruff with unused-import cleanup, remove dead `old_position`, and `TYPE_CHECKING` forward refs in SQLAlchemy models.
+- **Why:** Recruiters open `main` first; homepage/README must match the demo.
+- **Evidence:** `ruff check backend/app` clean; branch `cursor/portfolio-harden-main-d0b7`.
+- **Status:** DECIDED · IMPLEMENTED (this PR)

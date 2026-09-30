@@ -1,6 +1,6 @@
 import json
 import secrets
-from datetime import datetime, timedelta
+from datetime import timedelta
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 import redis.asyncio as aioredis
