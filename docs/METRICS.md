@@ -13,7 +13,7 @@ Evidence grades: **A** = artifact/command for this tree · **B** = reproducible 
 
 | ID | Claim (exact) | Name / unit / window | Grade | Evidence |
 |----|---------------|----------------------|-------|----------|
-| C1 | Backend test suite: **62 collected** (unit+integration; re-run for pass count) | count; `pytest tests/ --collect-only` | A | `docs/evidence/source-size.txt` + prior `pytest-summary.txt` (59 pass before URL normalize tests) |
+| C1 | Backend test suite: **68** cases in-tree (`def test_` count); documented green run **59** passed | count; `rg` / `pytest` | A | tree count 2026-09-30 · `docs/evidence/pytest-summary.txt` (59 pass historical) |
 | C2 | Non-member cannot read another workspace | HTTP **403** | A | `test_non_member_cannot_access_workspace` |
 | C3 | Non-member cannot patch another workspace’s doc | HTTP **403** | A | `test_non_member_cannot_update_document` |
 | C4 | WS membership helper: owner → true, outsider → false | boolean gate before WS accept | A | `test_member_true_after_workspace_create`, `test_outsider_is_not_member` |

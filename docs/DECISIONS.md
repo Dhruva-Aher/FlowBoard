@@ -210,3 +210,12 @@ Entries below are from the portfolio-hardening session. No invented benchmarks.
 - **Why:** Recruiters open `main` first; homepage/README must match the demo.
 - **Evidence:** `ruff check backend/app` clean; branch `cursor/portfolio-harden-main-d0b7`.
 - **Status:** DECIDED · IMPLEMENTED (this PR)
+
+### D21 — Aura-style README polish (`DECIDED`)
+
+| | |
+|--|--|
+| **Decision** | Root README mirrors Aura layout: subtitle, CI badge, Demo/Focus/Stack table, Highlights with distinct labels, proof screenshots, Architecture table + ASCII, Quick start, interview doc table. Metrics use exact evidence values (129.8 / 48.4 / 615.6 ms; 68 tests in-tree). |
+| **Why** | Recruiter glance consistency across portfolio; duplicate “Correctness” labels and soft test counts weakened Aura parity. |
+| **Evidence** | Root `README.md`; `docs/evidence/prod-api-latency.txt`; `assets/*`. |
+
